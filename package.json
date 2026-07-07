@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "vite build",
+    "build:wasm": "make",
     "preview": "vite preview",
     "dev": "vite",
     "deploy": "gh-pages -d dist",

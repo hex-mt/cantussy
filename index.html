@@ -1,681 +1,759 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta property="og:title" content="Cantussy" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://cantussy.com/" />
-    <meta property="og:image" content="https://cantussy.com/og_image.png" />
-    <meta
-      property="og:description"
-      content="Generate melodies and counperpoint with Cantussy"
-    />
-    <meta property="og:image:alt" content="Cantussy logo" />
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link href="/src/style.css" rel="stylesheet" />
-    <title>Cantussy</title>
-    <script>
-      document.documentElement.classList.toggle(
-        "dark",
-        localStorage.theme === "dark" ||
-          (!("theme" in localStorage) &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches),
-      );
-    </script>
-  </head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta property="og:title" content="Cantussy" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://cantussy.com/" />
+        <meta property="og:image" content="https://cantussy.com/og_image.png" />
+        <meta
+            property="og:description"
+            content="Generate melodies and counperpoint with Cantussy"
+        />
+        <meta property="og:image:alt" content="Cantussy logo" />
+        <link rel="icon" href="/favicon.ico" sizes="32x32" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link href="/src/style.css" rel="stylesheet" />
+        <title>Cantussy</title>
+        <script>
+            document.documentElement.classList.toggle(
+                "dark",
+                localStorage.theme === "dark" ||
+                    (!("theme" in localStorage) &&
+                        window.matchMedia("(prefers-color-scheme: dark)")
+                            .matches),
+            );
+        </script>
+    </head>
 
-  <body class="bg-orange-100 dark:bg-stone-900 flex flex-col min-h-screen">
-    <main
-      class="flex-1 flex flex-col items-center relative w-full overflow-hidden pb-6"
-    >
-      <h1
-        class="text-stone-700 dark:text-orange-100 text-8xl mt-24 mb-12 font-fancy"
-      >
-        Cantussy
-      </h1>
+    <body class="bg-orange-100 dark:bg-stone-900 flex flex-col min-h-screen">
+        <main
+            class="flex-1 flex flex-col items-center relative w-full overflow-hidden pb-6"
+        >
+            <h1
+                class="text-stone-700 dark:text-orange-100 text-8xl mt-24 mb-12 font-fancy"
+            >
+                Cantussy
+            </h1>
 
-      <section id="section-1" class="flex flex-col items-center gap-8 pt-8">
-        <div id="cantus"></div>
-        <div id="edit-input" class="hidden w-full h-41.25">
-          <div
-            class="flex justify-center text-stone-700/50 dark:text-orange-100/50 w-xl mb-2"
-          >
-            Enter a cantus in&nbsp;
-            <a
-              href="https://lilypond.org/doc/v2.24/Documentation/learning/simple-notation#pitches"
-              target="_blank"
-              class="text-orange-500 dark:text-orange-300 underline hover:text-orange-200 underline-offset-3"
-              >LilyPond notation</a
-            >&nbsp;(relative mode).
-          </div>
-          <div class="w-full flex justify-center items-center">
-            <input
-              type="text"
-              class="text-stone-700 dark:text-orange-100 text-center text-2xl w-xl mr-2 p-4 bg-stone-800/10 dark:bg-stone-800 focus:ring-0 focus:outline-none focus:border-2 focus:border-orange-300 dark:focus:border-orange-200"
-              id="cantus-string"
-              value=""
-            />
-            <button
-              id="confirm-edit"
-              class="w-12 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+            <section
+                id="section-1"
+                class="flex flex-col items-center gap-8 pt-8"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
-                <path
-                  d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"
-                />
-              </svg>
-            </button>
-            <button
-              id="cancel-edit"
-              class="w-12 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
-                <path
-                  d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-        <div class="flex gap-10 items-center">
-          <div class="flex items-center gap-4">
-            <div
-              class="flex flex-col items-center text-stone-700 dark:text-orange-100 text-center text-2xl w-25"
-            >
-              <div class="text-sm text-stone-700/50 dark:text-orange-100/50">
-                Length:
-              </div>
-              <span id="len-label">Random</span>
-            </div>
-            <div class="flex flex-col gap-2">
-              <button
-                class="w-6 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
-                id="length-increment"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23.53 25">
-                  <path d="m23.53 25-11.76-5.06L0 25 11.77 0z" />
-                </svg>
-              </button>
-              <button
-                class="w-6 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
-                id="length-decrement"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23.53 25">
-                  <path d="M23.53 0 11.77 5.07 0 0l11.77 25z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div class="flex items-center gap-4">
-            <div
-              class="flex flex-col items-center text-stone-700 dark:text-orange-100 text-center text-2xl w-25"
-            >
-              <div class="text-sm text-stone-700/50 dark:text-orange-100/50">
-                Mode:
-              </div>
-              <span id="mode-label">Random</span>
-            </div>
-            <div class="flex flex-col gap-2">
-              <button
-                class="w-6 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
-                id="mode-increment"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23.53 25">
-                  <path d="m23.53 25-11.76-5.06L0 25 11.77 0z" />
-                </svg>
-              </button>
-              <button
-                class="w-6 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
-                id="mode-decrement"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23.53 25">
-                  <path d="M23.53 0 11.77 5.07 0 0l11.77 25z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-          <button
-            class="w-10 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
-            id="randomise-cantus"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xml:space="preserve"
-              viewBox="0 0 25 28.27"
-            >
-              <path
-                d="M12.5 0c-.24 0-.49.06-.7.19L.7 6.59c-.1.07-.1.18 0 .24l11.1 6.4c.43.26.97.26 1.4 0l11.1-6.4c.1-.06.1-.17 0-.24L13.2.19a1.41 1.41 0 0 0-.7-.19zm0 5.76a1.65.95 0 0 1 1.65.95 1.65.95 0 0 1-1.65.96 1.65.95 0 0 1-1.65-.96 1.65.95 0 0 1 1.65-.95zM.12 7.66l-.06.02A.16.16 0 0 0 0 7.8v12.8c0 .51.27.98.7 1.23l11.1 6.4c.1.07.2.01.2-.12v-12.8c0-.5-.26-.97-.7-1.23L.2 7.7a.19.19 0 0 0-.09-.03zm2.05 3.17a1.65.95 60 0 1 1.41 1.03 1.65.95 60 0 1 0 1.9 1.65.95 60 0 1-1.65-.94 1.65.95 60 0 1 0-1.91 1.65.95 60 0 1 .24-.08zm6.5 11.26a1.65.95 60 0 1 1.4 1.03 1.65.95 60 0 1 0 1.9 1.65.95 60 0 1-1.64-.95 1.65.95 60 0 1 0-1.9 1.65.95 60 0 1 .24-.08zM24.88 7.66a.19.19 0 0 0-.09.03L13.7 14.1c-.43.26-.7.72-.7 1.23v12.8c0 .13.1.19.2.12l11.1-6.4c.43-.25.7-.72.7-1.22V7.82c0-.07-.02-.12-.06-.14a.1.1 0 0 0-.06-.02zm-2.05 3.17a.95 1.65 30 0 1 .24.08.95 1.65 30 0 1 0 1.9.95 1.65 30 0 1-1.65.96.95 1.65 30 0 1 0-1.9.95 1.65 30 0 1 1.41-1.04zm-3.25 5.63a.95 1.65 30 0 1 .25.08.95 1.65 30 0 1 0 1.9.95 1.65 30 0 1-1.66.96.95 1.65 30 0 1 0-1.91.95 1.65 30 0 1 1.41-1.03zm-3.25 5.63a.95 1.65 30 0 1 .25.07.95 1.65 30 0 1 0 1.91.95 1.65 30 0 1-1.66.95.95 1.65 30 0 1 0-1.9.95 1.65 30 0 1 1.41-1.03z"
-              />
-            </svg>
-          </button>
-          <button
-            class="w-14 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
-            id="play-cantus"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xml:space="preserve"
-              viewBox="0 0 60 52"
-            >
-              <path
-                d="M36.5 32.6c-4.7-1.4-3.3-2.6 1-4.3 2.2-.8 1-2.5 1-3.8 0-.6 2.4-.5 2.3-3-.2-1.5-3.9-4-4.9-5-.5-.5 1.2-2.2 0-3.6-1.7-2-2-5.3-3-7.1 0 0 .8-1.2.2-2C28-2 8.6-1.3 3.6 7.3c-5.5 9.7-5.6 23 6 30.2C14.6 40.7 8 52 8 52h20.3c0-2-2.2-9 1.7-8.6 3.5.3 7.7 0 7.3-3.7 0-1.2-.2-2.3.6-3.3s2-2.7-1.5-3.8m4.7-1.8 19 2.5v-5zM56.5 47l2-4.2L41 33.4zm2-28.2-2-4.3L41 28z"
-              />
-            </svg>
-          </button>
-          <button
-            class="w-10 flex justify-center items-center fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
-            id="solfa"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xml:space="preserve"
-              viewBox="0 0 83.7 118.1"
-              id="hand"
-              class="hidden"
-            >
-              <path
-                d="M42.5 4.8c-.6 2.7-.2 5.9 0 8.5l-.5 21c-.1 5.1 0 10.2.2 15.3-2.4 4.6-4-4.6-4.5-6.9-.3-2.1-1-4.2-1.5-6.3C34.2 28 32 19.6 31 11c0-1-.6-1.8-1.2-2.5-2.3-2.6-6.8-2-7.5 1.6v3c0 7.1.5 14.2 1.6 21.3l.8 5.2c.7 4.1 3.9 16.9 1.5 25.2-.3 3.8-.6 6 0 9 0 .2-.5 2.6-1.4 2.5-5.7-.7-5.4-12.7-9-16.6-3-4.5-10.3-7.7-15-4.2-3.2 5 4.6 9.4 5 14.8a61 61 0 0 1 6 19c1 5.4 6.5 8 8.7 12.6 4 5.7 8.6 12.7 16.2 13.2 6.3 1.5 12.7 3.1 19.2 3 5.7-.2 15.4 1.5 16.3-6.3.2-1.8.7-3.4 1.2-5.1l.6-2c1.6-4.8 3.5-9.6 3-14.8.2-10.4 2.6-20.5 2.8-31l1.2-7.4.3-1.8 1-6.7.3-2.5c.4-2.4 1-4.7 1-7 0-3.4.4-4.4-.3-5.2-2.4-2.5-4.5-1.5-6 .7a10 10 0 0 0-1.2 2 31 31 0 0 0-1.7 5.4c-1.3 5-.5 5.5-2.4 13.3 0 0-1 3.7-1.9 5.4l.3-7.4c.6-12.2.8-24.5.6-36.7l-.3-2.2c-.5-4-7.4-5.6-8 .2-.7 5.9-1.1 12-1.3 14.3l-.6 4.6c-1 6.8-1 13.7-2.4 20.4-2.3 7.2-5.2-3.3-4.7-6.3v-7.7c.1-3.4-.1-7.5-.2-11-.5-6.4 0-12.7-2.2-18.9l-1-2.4c-.8-1.2-2.2-2-3.7-2-2.5.3-3.4 2.7-4 4.8z"
-              />
-            </svg>
-            <div class="w-9" id="fist">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xml:space="preserve"
-                viewBox="0 0 59.9 67.1"
-              >
-                <path
-                  d="M15.2 0h-1c-4.1.3-7.7 4.5-9.5 8.3a46.3 46.3 0 0 0-1.2 17.4c1.3-2.4 2.6-5.2 3.8-7.8v-.1c-.2-6.7.8-7.9 1.3-8 .5 0-.5.7-.5 6.4 1-1.9 1.9-3.4 2.8-4.2.7-.6 1.8-.8 3-.8s2.8.2 4.4.5l3 .6-.8-8.5v-.4C19.5 2.2 19 .1 15.2 0zm11 1.3c-2.6 0-4 1.5-5 2.2l.1.3.7 8.7 5.4 1c1.7.2 4.4-.4 6.6-.5h.7l-1-7.6s-2.8-3.7-6.3-4a8 8 0 0 0-1.2-.1zm14 3c-2.8 0-4.8.8-5.6 1.2l.9 7.4c.6 0 1.1.1 1.6.3.8.3 1.5 1 1.5 2 .3 3-1.1 5.3-3.3 6.9l-2 10.7v.4l.4.3c.3.3 1 .5 1.7.6 1.4.3 3.2.4 4.4.6a4.7 4.7 0 0 0 4.6-1.5l.2-.3c.3-.3.6-.7.8-1.2a24 24 0 0 0 2.4-8.8c.6-6 .2-12 0-13.9 0 0-3-4.2-6.4-4.6L40 4.3zm12.4 4.5c-1.5 0-3.2.3-4 .5.5 4.6.4 9.2 0 13.7-.4 3.4-1.1 6.7-2.5 9.1a3 3 0 0 1-.9 1.3c3.5 2.8 7 3.2 10.6 1.5l.4-.2c1.7-3.9 3.2-8 3.6-12.2.1-4.9 1-9.8-4.8-13.2a5 5 0 0 0-2.4-.5zM14 12c-1.2 0-2 .2-2.6.6-.9.7-2 2.8-3.2 5.3v.3H8C5.7 24 2.3 29 .1 34.7c-1.4 3.8 11 26 17.3 32 1 1 35.5.5 38.5-3.7 4-4.8 2-18.3.2-27.3-4 1.9-7.8 1.3-11.4-1.6a5.6 5.6 0 0 1-5 1.5l-4.5-.6a6 6 0 0 1-2-.7l-.6-.6-.4.2c-.6.3-1.2.4-2 .6a15 15 0 0 1-3.6.3c-2-.2-3.4-1-4.2-1.9a5 5 0 0 1-1.1-3.3c0-1.6.4-3 .7-3.8h-2.8l-1 4.7c6.8 5 10.8 6.1 13.7 9 3 2.9 4.9 7.5 7.5 19.7v.4l-.7.2v-.4C36 47 34.1 42.7 31.3 40c-2.8-2.7-6.8-3.8-13.8-9.1l-.2-.2 1-5.1h-.7c-1.1-.2-2-.4-2.6-.7-.3 0-.8-.4-1-.7l1.4.2c.4.2 1.2.2 2.3.3l3 .2h2l3.3-.4a21 21 0 0 0 8.5-2.9v-.2h.3c2-1.4 3.1-3.4 3-6.1-.1-.8-.4-1.1-1-1.4-.7-.2-1.7-.2-2.8-.1-2.2.1-4.8.7-6.8.5a56 56 0 0 1-5.7-1h-.3V13a110.2 110.2 0 0 0-7.2-1zm20.4 10.7a22.6 22.6 0 0 1-8.2 2.6l-3.3.3c-.2.6-.8 2.2-.8 3.9 0 1 .2 2 .9 2.8.7.8 1.8 1.4 3.7 1.6a15.6 15.6 0 0 0 5.2-.8c.2 0 .4-.2.5-.3v-.1z"
-                  paint-order="fill markers stroke"
-                />
-              </svg>
-            </div>
-          </button>
-          <button
-            class="w-8 flex justify-center items-center fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
-            id="edit"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xml:space="preserve"
-              viewBox="0 0 89.4 153.8"
-            >
-              <g>
-                <path
-                  d="M2.4 0H0a89.1 89.1 0 0 1 18.2 32.4c5.1 3.6 10.4 7.2 14.6 10.8l-13-6 4.4 14.1c7.6 4.9 15 10 22 16L26 56.6c6 16.7 15 34.4 38.2 53.8-3.1-33.7-15-68.8-41.5-92.1 25.2 14.3 43.2 52.7 47.6 121 .4-10 .3-19.3-.4-28.2a81.8 81.8 0 0 0-1.6-57.7c-.7 8-1.2 15.5-2.7 22-.2-8.7-.3-17.8.1-27.4C50.4 18.3 19 .8 2.4 0z"
-                />
-                <path
-                  d="M57.9 119.9c-.8 0-1.4.6-1.4 1.3v4.5c0 .8.6 1.4 1.4 1.4h2.5a.8.8 0 0 1 .7.8v2a.8.8 0 0 1-.7.8H56a4.5 4.5 0 0 0-4.5 4l-1.4 15a3.7 3.7 0 0 0 3.7 4.1h31.8c2.2 0 4-1.8 3.7-4l-1.4-15c-.2-2.3-2.1-4-4.4-4H79a.8.8 0 0 1-.8-.9v-2a.8.8 0 0 1 .8-.8h2.5c.7 0 1.4-.6 1.4-1.4v-4.5c0-.7-.7-1.3-1.4-1.3z"
-                />
-              </g>
-            </svg>
-          </button>
-        </div>
-      </section>
-
-      <section id="section-2" class="flex flex-col items-center">
-        <div id="ctp"></div>
-        <div class="flex gap-10 items-center">
-          <div
-            class="flex flex-col items-center text-dark-900 dark:text-orange-100 text-center text-2xl w-24"
-          >
-            <div class="text-sm text-stone-700/50 dark:text-orange-100/50">
-              Solutions:
-            </div>
-            <span id="solutions-label">0</span>
-          </div>
-          <button
-            class="w-10 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-700 dark:active:fill-orange-50 active:scale-90 transition"
-            id="randomise-both"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xml:space="preserve"
-              viewBox="0 0 50 42.4"
-            >
-              <path
-                d="m37.5 14.1-.7.2-11.1 6.4v.3l11.1 6.4c.4.2 1 .2 1.4 0L49.3 21v-.3l-11.1-6.4a1.4 1.4 0 0 0-.7-.2zm0 5.8a1.6 1 0 0 1 1.6 1 1.6 1 0 0 1-1.6 1 1.6 1 0 0 1-1.6-1 1.6 1 0 0 1 1.6-1zm-12.4 1.9a.2.2 0 0 0-.1.1v12.8c0 .5.3 1 .7 1.3l11.1 6.4c.1 0 .2 0 .2-.2V29.4c0-.5-.3-1-.7-1.2l-11.1-6.4zm2 3.2a1.6 1 60 0 1 1.5 1 1.6 1 60 0 1 0 1.9 1.6 1 60 0 1-1.7-1 1.6 1 60 0 1 0-1.9 1.6 1 60 0 1 .3 0zm6.6 11.2a1.6 1 60 0 1 1.4 1 1.6 1 60 0 1 0 2 1.6 1 60 0 1-1.7-1 1.6 1 60 0 1 0-1.9 1.6 1 60 0 1 .3 0zm16.2-14.4a.2.2 0 0 0-.1 0l-11.1 6.4c-.4.3-.7.8-.7 1.3v12.8c0 .1.1.2.2 0L49.3 36c.4-.3.7-.7.7-1.2v-13a.1.1 0 0 0-.1 0zm-2 3.2a1 1.6 30 0 1 .2 0 1 1.6 30 0 1 0 2 1 1.6 30 0 1-1.7 1 1 1.6 30 0 1 0-2 1 1.6 30 0 1 1.4-1zm-3.3 5.6a1 1.6 30 0 1 .2 0 1 1.6 30 0 1 0 2 1 1.6 30 0 1-1.6 1 1 1.6 30 0 1 0-2 1 1.6 30 0 1 1.4-1zm-3.3 5.6a1 1.6 30 0 1 .3.1 1 1.6 30 0 1 0 2 1 1.6 30 0 1-1.7.9 1 1.6 30 0 1 0-2 1 1.6 30 0 1 1.4-1zM12.5 0c-.2 0-.5 0-.7.2L.7 6.6c-.1 0-.1.2 0 .2l11.1 6.4c.4.3 1 .3 1.4 0l11.1-6.4c.1 0 .1-.1 0-.2L13.2.2a1.4 1.4 0 0 0-.7-.2zm0 5.8a1.6 1 0 0 1 1.6 1 1.6 1 0 0 1-1.6.9 1.6 1 0 0 1-1.6-1 1.6 1 0 0 1 1.6-1zM.1 7.7a.2.2 0 0 0-.1.1v12.8c0 .5.3 1 .7 1.2l11.1 6.4c.1.1.2 0 .2 0v-13c0-.5-.3-1-.7-1.2L.2 7.7zm2 3.1a1.6 1 60 0 1 1.5 1 1.6 1 60 0 1 0 2 1.6 1 60 0 1-1.7-1A1.6 1 60 0 1 2 11a1.6 1 60 0 1 .3 0zm6.6 11.3a1.6 1 60 0 1 1.4 1 1.6 1 60 0 1 0 2 1.6 1 60 0 1-1.7-1 1.6 1 60 0 1 0-2 1.6 1 60 0 1 .3 0zM24.9 7.7a.2.2 0 0 0-.1 0L13.7 14c-.4.3-.7.7-.7 1.2V28c0 .2.1.2.2.2l11.1-6.4c.4-.3.7-.8.7-1.3V7.7a.1.1 0 0 0-.1 0zm-2 3.1a1 1.6 30 0 1 .2.1 1 1.6 30 0 1 0 2 1 1.6 30 0 1-1.7.9 1 1.6 30 0 1 0-2 1 1.6 30 0 1 1.4-1zm-3.3 5.7a1 1.6 30 0 1 .2 0 1 1.6 30 0 1 0 2 1 1.6 30 0 1-1.6.9 1 1.6 30 0 1 0-2 1 1.6 30 0 1 1.4-1zM16.3 22a1 1.6 30 0 1 .3 0 1 1.6 30 0 1 0 2 1 1.6 30 0 1-1.7 1 1 1.6 30 0 1 0-2 1 1.6 30 0 1 1.4-1z"
-              />
-            </svg>
-          </button>
-          <button
-            class="w-10 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
-            id="randomise-ctp"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xml:space="preserve"
-              viewBox="0 0 25 28.27"
-            >
-              <path
-                d="M12.5 0c-.24 0-.49.06-.7.19L.7 6.59c-.1.07-.1.18 0 .24l11.1 6.4c.43.26.97.26 1.4 0l11.1-6.4c.1-.06.1-.17 0-.24L13.2.19a1.41 1.41 0 0 0-.7-.19zm0 5.76a1.65.95 0 0 1 1.65.95 1.65.95 0 0 1-1.65.96 1.65.95 0 0 1-1.65-.96 1.65.95 0 0 1 1.65-.95zM.12 7.66l-.06.02A.16.16 0 0 0 0 7.8v12.8c0 .51.27.98.7 1.23l11.1 6.4c.1.07.2.01.2-.12v-12.8c0-.5-.26-.97-.7-1.23L.2 7.7a.19.19 0 0 0-.09-.03zm2.05 3.17a1.65.95 60 0 1 1.41 1.03 1.65.95 60 0 1 0 1.9 1.65.95 60 0 1-1.65-.94 1.65.95 60 0 1 0-1.91 1.65.95 60 0 1 .24-.08zm6.5 11.26a1.65.95 60 0 1 1.4 1.03 1.65.95 60 0 1 0 1.9 1.65.95 60 0 1-1.64-.95 1.65.95 60 0 1 0-1.9 1.65.95 60 0 1 .24-.08zM24.88 7.66a.19.19 0 0 0-.09.03L13.7 14.1c-.43.26-.7.72-.7 1.23v12.8c0 .13.1.19.2.12l11.1-6.4c.43-.25.7-.72.7-1.22V7.82c0-.07-.02-.12-.06-.14a.1.1 0 0 0-.06-.02zm-2.05 3.17a.95 1.65 30 0 1 .24.08.95 1.65 30 0 1 0 1.9.95 1.65 30 0 1-1.65.96.95 1.65 30 0 1 0-1.9.95 1.65 30 0 1 1.41-1.04zm-3.25 5.63a.95 1.65 30 0 1 .25.08.95 1.65 30 0 1 0 1.9.95 1.65 30 0 1-1.66.96.95 1.65 30 0 1 0-1.91.95 1.65 30 0 1 1.41-1.03zm-3.25 5.63a.95 1.65 30 0 1 .25.07.95 1.65 30 0 1 0 1.91.95 1.65 30 0 1-1.66.95.95 1.65 30 0 1 0-1.9.95 1.65 30 0 1 1.41-1.03z"
-                paint-order="fill markers stroke"
-              />
-            </svg>
-          </button>
-          <button
-            class="w-14 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
-            id="play-ctp-top"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xml:space="preserve"
-              viewBox="0 0 60 52"
-            >
-              <path
-                d="M22.8 0c-7.4-.4-16 2-19.2 7.3-5.5 9.7-5.6 23 6 30.2C14.6 40.7 8 52 8 52h20.3c0-2-2.2-8.9 1.7-8.6 3.5.3 7.7.1 7.3-3.7 0-1.2-.2-2.3.6-3.3s2-2.7-1.5-3.8h.1c-4.7-1.4-3.3-2.6 1-4.3 2.2-.8 1-2.5 1-3.8 0-.6 2.4-.5 2.3-2.9-.2-1.6-3.9-4-4.9-5-.5-.6 1.2-2.3 0-3.7-1.7-1.9-2-5.3-3-7 0 0 .8-1.3.2-2-2-2.3-5.9-3.5-10.3-3.8zm33.7 14.5L41 28l17.5-9.2zm-37.7.7H22v11.2h3.1v2.4h-9.5v-2.4h3v-8.8l-3 .7V16l3.1-.7zM60 28.3l-18.9 2.5 19 2.5zm-19 5.1L56.5 47l2-4.2z"
-              />
-            </svg>
-          </button>
-          <button
-            class="w-14 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
-            id="play-ctp-bottom"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xml:space="preserve"
-              viewBox="0 0 60 52"
-            >
-              <path
-                d="M22.8 0c-7.4-.4-16 2-19.2 7.3-5.5 9.7-5.6 23 6 30.2C14.6 40.7 8 52 8 52h20.3c0-2-2.2-8.9 1.7-8.6 3.5.3 7.7.1 7.3-3.7 0-1.2-.2-2.3.6-3.3s2-2.7-1.5-3.8h.1c-4.7-1.4-3.3-2.6 1-4.3 2.2-.8 1-2.5 1-3.8 0-.6 2.4-.5 2.3-2.9-.2-1.6-3.9-4-4.9-5-.5-.6 1.2-2.3 0-3.7-1.7-1.9-2-5.3-3-7 0 0 .8-1.3.2-2-2-2.3-5.9-3.5-10.3-3.8zm33.7 14.5L41 28l17.5-9.2zm-36.4.6a6 6 0 0 1 3.8 1 4 4 0 0 1 .8 5c-.4.8-1.2 1.6-2.4 2.7l-3 2.6h6V29h-9.8v-2.5l5-4.4 1-1.2.2-1.2a2 2 0 0 0-.6-1.5c-.4-.4-1-.6-1.7-.6l-1.8.3-2 1v-3a16.3 16.3 0 0 1 4.5-.7zm40 13.2-19 2.5 19 2.5zm-19 5.1L56.4 47l2-4.2z"
-              />
-            </svg>
-          </button>
-          <button
-            class="w-15 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
-            id="play-ctp"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 62">
-              <path
-                id="second-head"
-                d="M48.5 32.6c-4.7-1.4-3.3-2.6 1-4.3 2.2-.8 1-2.5 1-3.8 0-.6 2.4-.5 2.3-3-.2-1.5-3.9-4-4.9-5-.5-.5 1.2-2.2 0-3.6-1.7-2-2-5.3-3-7.1 0 0 .8-1.2.2-2C40-2 20.6-1.3 15.6 7.3c-5.5 9.7-5.6 23 6 30.2C26.6 40.7 20 52 20 52h20.3c0-2-2.2-9 1.7-8.6 3.5.3 7.7 0 7.3-3.7 0-1.2-.2-2.3.6-3.3s2-2.7-1.5-3.8m4.7-1.8 19 2.5v-5zM68.5 47l2-4.2L53 33.4zm2-28.2-2-4.3L53 28z"
-              />
-              <path
-                d="M36.5 42.6c-4.7-1.4-3.3-2.6 1-4.3 2.2-.8 1-2.5 1-3.8 0-.6 2.4-.5 2.3-3-.2-1.5-3.9-4-4.9-5-.5-.5 1.2-2.2 0-3.6-1.7-2-2-5.3-3-7.1 0 0 .8-1.2.2-2C28 8 8.6 8.7 3.6 17.3c-5.5 9.7-5.6 23 6 30.2C14.6 50.7 8 62 8 62h20.3c0-2-2.2-9 1.7-8.6 3.5.3 7.7 0 7.3-3.7 0-1.2-.2-2.3.6-3.3s2-2.7-1.5-3.8m4.7-1.8 19 2.5v-5zM56.5 57l2-4.2L41 43.4zm2-28.2-2-4.3L41 38z"
-              />
-            </svg>
-          </button>
-        </div>
-      </section>
-
-      <section id="section-3" class="flex flex-col items-center gap-8 pt-8">
-        <div id="compound"></div>
-        <div class="flex gap-10 items-center">
-          <button
-            class="w-18 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
-            id="play-compound"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xml:space="preserve"
-              version="1.0"
-              viewBox="0 0 463.6 303.8"
-            >
-              <g>
-                <path
-                  d="m110.7 99.2-6.7-.4c-1 3-2.8 5.3-5.8 7.1-3 1.7-4.9 1.8-12.2 3.6-7.6 1.6-22.1 3.5-32.4 7a96 96 0 0 0-29 13.5 57.8 57.8 0 0 0-19.3 24c-4.1 10-5 25.4-5.2 35.6-.4 10.1 1 17.6 3.1 24.8 2.1 7 5.1 12.6 9.2 17.3a8 8 0 0 0-.3 7.4 22 22 0 0 0 7 7.7 51.9 51.9 0 0 0 13.5 20.6A128 128 0 0 0 62 290.7a72.9 72.9 0 0 0 32.7 8.3 80 80 0 0 0 32.3-9.2c9.4-4.9 17.5-13.7 24.1-19.4 6.5-5.7 10-11.4 15-14.5a24 24 0 0 1 14.5-4.2l3.3-5.2a9.7 9.7 0 0 1-5.5-5 13 13 0 0 1-1.6-9.6c1-4 3.1-9.5 7.6-14.4 4.5-5.2 13.5-11.8 19-15.6a44 44 0 0 1 13.4-6.6c3.7-1 5.5-1.6 8.6.4 3 2 5.9 5.6 9.1 11.4l7.3.3c1.3-2.8 3-5.1 5.4-7.3 2.3-2.1 3.8-3.6 8.8-5.3 5-1.8 13.6-2.7 21-5.3a98 98 0 0 0 22.3-11.2 46 46 0 0 0 13.6-16.6 56.3 56.3 0 0 0 5.6-24.1 86 86 0 0 0-6-29l102-55.4a215.2 215.2 0 0 1 23.2-13.5c.6.8 1.5 1 3 .4 1.4-.5 3-1.5 5.2-3.4.5 2.6 1.7 3.9 3.4 4.3a11 11 0 0 0 6.8-2.2c1.2-1.4 1.1-3.2.1-5.6 2.2-1 3.6-2.2 4.1-3.3.5-1.2.1-2.2-1-3.5 2.6 0 4-.8 4.2-2.9 0-2.1-1.3-7.7-3-9.2-1.7-1.4-4-1-6.7 1.1-.8-1.7-1.6-2.7-3-3-1.3-.4-2.8.1-4.6 1.2-.8-2.2-1.8-3.8-3.4-4.2a7.1 7.1 0 0 0-5.5.9c-1.4.8-2.3 2.8-2.4 4.2-.2 1.4.3 2.6 1.5 3.9a8 8 0 0 0-4.5 1.8c-1.2 1-1.6 2.3-1.7 4 .2-.7-2.5.1-8.1 2.6-5.8 2.3-14.1 6.1-25.7 11.5L299 83a36.3 36.3 0 0 0-9.5-14c-5-5-12.2-11.8-19.6-15a52.5 52.5 0 0 0-46.7 1.6c-7.5 3.6-16.6 11.5-22 15.4-5.5 3.7-6.6 5.8-10.4 7.1a22.6 22.6 0 0 1-12 .4l-4 6.2c3 2.5 4.8 5.3 4.9 8.4 0 3-.6 6.5-4.4 10a74.9 74.9 0 0 1-40.7 15.4c-6.9 0-14.4-1.7-18.4-5-4-3.2-5.8-7.8-5.5-14.2z"
-                />
-                <path
-                  d="m395.7 39.6-5.5-11c-.7-.2-1.2-.3-1.3-.7-.2-.4 0-.9.4-1.4-.2-.9-.7-1.5-1.2-1.6-.7-.2-1.5.6-2.5.5-1.1-.1-2.8-.4-3.7-1.3a6 6 0 0 1-2.2-4.7c0-2.2 1.3-6.2 2.6-8a6 6 0 0 1 5-3c2-.2 5.1.3 7 1.7a8 8 0 0 1 3.8 5.4c0 1.9-2.8 4.8-3.2 6-.5 1.3-.3 1.6.6 1.2.3 0 .6.2.7.7V25l5.3 10.8-5.8 3.7zm16.9-8.8L406.4 18c.4-.8.3-1.4-.2-1.8s-1.4-.5-2.6-.4c.3-1.8.1-3.7-.5-5.7-.7-2.2-3-5.3-3.3-6.8-.3-1.6 1-2.2 1.8-2.6.8-.5 2.1-1.1 3.1-.2.8 1 .9 3.9 2.2 5.8 1.2 2 3 3.6 5.4 5.3a2 2 0 0 0-.6 1.5c0 .5.4.9.9 1.2l6.3 13.2-5.4 3.3h-.9zm0 21 6.1 12.8c.9.2 1.3.7 1.3 1.3 0 .5-.5 1.4-1.3 2.3 1.5.9 3 2.2 4.2 4 1.3 1.8 2.1 5.5 3.3 6.8 1 1 2.1.5 3 .1 1-.4 2.4-1 2.2-2.3-.3-1.3-2.5-3.2-3.2-5.3-.7-2.2-1-4.6-.8-7.5-.7 0-1.2-.2-1.5-.5s-.5-.9-.4-1.4L419 49l-6 2.2-.5.7zm13.2-8.6 5.2 11.2c-.3.7-.5 1.3-.2 1.6.1.3.6.5 1.4.5.5.7.6 1.3.4 2-.4.5-1.4.6-2 1.5-.6.9-1.4 2.3-1.2 3.8 0 1.4.6 3.2 2.3 4.5 1.7 1.2 5.6 2.9 8 3a7 7 0 0 0 5.4-2c1.3-1.5 2.8-4.5 3-6.6.1-2.2-.4-5-1.9-6.3-1.5-1.2-5.7-1-6.8-1.2-1.3-.4-1.4-1-.4-1.3a1 1 0 0 0-.1-1c-.3-.2-.8-.7-1.5-1L432.3 41l-6.6 2.2z"
-                />
-              </g>
-            </svg>
-          </button>
-        </div>
-      </section>
-
-      <section id="section-4" class="flex flex-col items-center gap-16 pt-16">
-        <div class="flex items-center justify-center gap-16">
-          <div class="flex flex-col items-center gap-1">
-            <div class="text-sm text-stone-700/50 dark:text-orange-100/50">
-              Equal Temperament:
-            </div>
-            <div
-              class="flex bg-stone-800/10 dark:bg-stone-800 rounded-full text-stone-700 dark:text-orange-100"
-              id="edo-buttons"
-            >
-              <button
-                id="edo-12"
-                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-              >
-                12
-              </button>
-              <button
-                id="edo-19"
-                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-              >
-                19
-              </button>
-              <button
-                id="edo-31"
-                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-              >
-                31
-              </button>
-              <button
-                id="edo-50"
-                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-              >
-                50
-              </button>
-              <button
-                id="edo-53"
-                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-              >
-                53
-              </button>
-              <button
-                id="edo-55"
-                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-              >
-                55
-              </button>
-            </div>
-          </div>
-          <div class="flex flex-col gap-2 items-center justify-center">
-            <div class="flex justify-center items-center gap-4">
-              <div class="w-7 fill-stone-700 dark:fill-orange-100">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 86.9 132">
-                  <path
-                    d="M29.3 0 9.5 86.4h20.3c1.6-4.1 5.2-7.1 9.5-7.9V66h-.1a2 2 0 1 1 0-3.8V49.3a2 2 0 1 1 0-3.8V32.8a2 2 0 1 1 0-3.9V16.2a2 2 0 1 1 0-3.8V8h4.4v4.4h.1a2 2 0 1 1 0 3.8v12.7a2 2 0 1 1 0 3.9v12.7a2 2 0 1 1 0 3.8v12.8a2 2 0 1 1 0 3.8v12.6h.2l19.8-34.3L53.7 0zm55.6 13.6a2 2 0 0 0-1.8 1l-2.8 4.8L78 18l-5 11 1.4.8-34.6 60a2 2 0 0 0 .8 2.7 2 2 0 0 0 1.2.2 2 2 0 0 0 1-.4 2 2 0 0 0 .3-.3 2 2 0 0 0 .2-.3l34.6-59.9 1.5.9 7-10-2.5-1.3 2.8-4.8a2 2 0 0 0-.7-2.8 2 2 0 0 0-1-.2zm-18.5 42-15.6 27c1 1 1.7 2.4 2.3 3.8h20.3zm-25 26.8a8.4 8.4 0 0 0-8.3 8.3 8.4 8.4 0 0 0 8.4 8.4 8.4 8.4 0 0 0 8.3-8.4 8.4 8.4 0 0 0-1.2-4.3l-3.7 6.3a4 4 0 0 1-5.4 1.5 4 4 0 0 1-1.5-5.5l3.7-6.3a8.4 8.4 0 0 0-.2 0zM7.6 95 0 128v4h8.3v-4h66.3v4H83v-4l-7.5-33H53a12.4 12.4 0 0 1-23.3 0z"
-                  />
-                </svg>
-              </div>
-              <div
-                class="flex flex-col items-center text-stone-700 dark:text-orange-100 text-2xl w-12"
-              >
-                <div class="text-sm text-stone-700/50 dark:text-orange-100/50">
-                  BPM:
+                <div id="cantus"></div>
+                <div id="edit-input" class="hidden w-full h-41.25">
+                    <div
+                        class="flex justify-center text-stone-700/50 dark:text-orange-100/50 w-xl mb-2"
+                    >
+                        Enter a cantus in&nbsp;
+                        <a
+                            href="https://lilypond.org/doc/v2.24/Documentation/learning/simple-notation#pitches"
+                            target="_blank"
+                            class="text-orange-500 dark:text-orange-300 underline hover:text-orange-200 underline-offset-3"
+                            >LilyPond notation</a
+                        >&nbsp;(relative mode).
+                    </div>
+                    <div class="w-full flex justify-center items-center">
+                        <input
+                            type="text"
+                            class="text-stone-700 dark:text-orange-100 text-center text-2xl w-xl mr-2 p-4 bg-stone-800/10 dark:bg-stone-800 focus:ring-0 focus:outline-none focus:border-2 focus:border-orange-300 dark:focus:border-orange-200"
+                            id="cantus-string"
+                            value=""
+                        />
+                        <button
+                            id="confirm-edit"
+                            class="w-12 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 -960 960 960"
+                            >
+                                <path
+                                    d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"
+                                />
+                            </svg>
+                        </button>
+                        <button
+                            id="cancel-edit"
+                            class="w-12 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 -960 960 960"
+                            >
+                                <path
+                                    d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+                                />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <span id="bpm-label">80</span>
-              </div>
-            </div>
-            <div class="appearance-none accent-orange-200">
-              <input
-                class="slider"
-                type="range"
-                list="tickmarks"
-                min="40"
-                max="208"
-                value="80"
-                step="2"
-                id="bpm-slider"
-              />
-              <datalist id="tickmarks">
-                <option value="40"></option>
-                <option value="42"></option>
-                <option value="44"></option>
-                <option value="46"></option>
-                <option value="48"></option>
-                <option value="50"></option>
-                <option value="52"></option>
-                <option value="54"></option>
-                <option value="56"></option>
-                <option value="58"></option>
-                <option value="60"></option>
-                <option value="63"></option>
-                <option value="66"></option>
-                <option value="69"></option>
-                <option value="72"></option>
-                <option value="76"></option>
-                <option value="80"></option>
-                <option value="84"></option>
-                <option value="88"></option>
-                <option value="92"></option>
-                <option value="96"></option>
-                <option value="100"></option>
-                <option value="104"></option>
-                <option value="108"></option>
-                <option value="112"></option>
-                <option value="116"></option>
-                <option value="120"></option>
-                <option value="126"></option>
-                <option value="132"></option>
-                <option value="138"></option>
-                <option value="144"></option>
-                <option value="152"></option>
-                <option value="160"></option>
-                <option value="168"></option>
-                <option value="176"></option>
-                <option value="184"></option>
-                <option value="192"></option>
-                <option value="200"></option>
-                <option value="208"></option>
-              </datalist>
-            </div>
-          </div>
-          <div class="flex flex-col items-center gap-1">
-            <div class="text-sm text-stone-700/50 dark:text-orange-100/50">
-              Waveform
-            </div>
-            <div
-              class="flex bg-stone-800/10 dark:bg-stone-800 rounded-full text-stone-700 dark:text-orange-100"
-              id="waveform-buttons"
-            >
-              <button
-                id="triangle"
-                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 94.7 94.6"
-                  class="w-6"
-                  stroke="currentColor"
-                >
-                  <path
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="10"
-                    d="M6 47.3 26.6 6 68 88.6l20.7-41.3"
-                  />
-                </svg>
-              </button>
-              <button
-                id="sawtooth"
-                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 94.7 94.6"
-                  class="w-6"
-                  stroke="currentColor"
-                >
-                  <path
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="10"
-                    d="M6 47.3V6l82.6 82.5V47.3"
-                  />
-                </svg>
-              </button>
-              <button
-                id="square"
-                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 94.7 94.6"
-                  class="w-6"
-                  stroke="currentColor"
-                >
-                  <path
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="10"
-                    d="M6 47.3V6h41.3v82.5h41.3V47.3"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="flex flex-col items-center gap-1">
-            <div class="text-sm text-stone-700/50 dark:text-orange-100/50">
-              Theme:
-            </div>
-            <div
-              class="flex bg-stone-800/10 dark:bg-stone-800 rounded-full text-stone-700 dark:text-orange-100"
-              id="theme-buttons"
-            >
-              <button
-                id="light-mode"
-                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="24px"
-                  viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="currentColor"
-                >
-                  <path
-                    d="M480-360q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 80q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"
-                  />
-                </svg>
-              </button>
-              <button
-                id="dark-mode"
-                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="24px"
-                  viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="currentColor"
-                >
-                  <path
-                    d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"
-                  />
-                </svg>
-              </button>
-              <button
-                id="system-mode"
-                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="24px"
-                  viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="currentColor"
-                >
-                  <path
-                    d="M40-120v-80h880v80H40Zm120-120q-33 0-56.5-23.5T80-320v-440q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v440q0 33-23.5 56.5T800-240H160Zm0-80h640v-440H160v440Zm0 0v-440 440Z"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+                <div class="flex gap-10 items-center">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="flex flex-col items-center text-stone-700 dark:text-orange-100 text-center text-2xl w-25"
+                        >
+                            <div
+                                class="text-sm text-stone-700/50 dark:text-orange-100/50"
+                            >
+                                Length:
+                            </div>
+                            <span id="len-label">Random</span>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <button
+                                class="w-6 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                                id="length-increment"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 23.53 25"
+                                >
+                                    <path
+                                        d="m23.53 25-11.76-5.06L0 25 11.77 0z"
+                                    />
+                                </svg>
+                            </button>
+                            <button
+                                class="w-6 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                                id="length-decrement"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 23.53 25"
+                                >
+                                    <path
+                                        d="M23.53 0 11.77 5.07 0 0l11.77 25z"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="flex flex-col items-center text-stone-700 dark:text-orange-100 text-center text-2xl w-25"
+                        >
+                            <div
+                                class="text-sm text-stone-700/50 dark:text-orange-100/50"
+                            >
+                                Mode:
+                            </div>
+                            <span id="mode-label">Random</span>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <button
+                                class="w-6 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                                id="mode-increment"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 23.53 25"
+                                >
+                                    <path
+                                        d="m23.53 25-11.76-5.06L0 25 11.77 0z"
+                                    />
+                                </svg>
+                            </button>
+                            <button
+                                class="w-6 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                                id="mode-decrement"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 23.53 25"
+                                >
+                                    <path
+                                        d="M23.53 0 11.77 5.07 0 0l11.77 25z"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button
+                        class="w-12 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                        id="toggle-rules"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            xml:space="preserve"
+                            viewBox="0 0 73.35 58.38"
+                        >
+                            <g>
+                                <path
+                                    d="M43.88 45.23H0v4.5a8.63 8.63 0 0 0 8.65 8.65h38.82a8 8 0 0 1-3.6-6.57zM66.77 0a6.56 6.56 0 0 0-6.57 6.58v6.57h13.15V6.58A6.56 6.56 0 0 0 66.78 0"
+                                />
+                                <path
+                                    d="M22.66 0a7.9 7.9 0 0 0-7.94 7.94v35.7h30.74v8.16a6.56 6.56 0 1 0 13.15 0V6.58c0-2.77 1.48-5.1 3.59-6.58zm8.11 7.04 2.34 2.34L26.48 16l-3.8-3.8 2.34-2.34 1.46 1.47zm6.3 2.83h12.64v3.3H37.07zm-6.3 7.75 2.34 2.34-6.63 6.63-3.8-3.8 2.34-2.35 1.46 1.47zm6.3 2.83h12.64v3.3H37.07zm-6.3 7.76 2.34 2.33-6.63 6.63-3.8-3.8 2.34-2.34 1.46 1.46zm6.3 2.82h12.64v3.31H37.07z"
+                                />
+                            </g>
+                        </svg>
+                    </button>
+                    <button
+                        class="w-10 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                        id="randomise-cantus"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            xml:space="preserve"
+                            viewBox="0 0 25 28.27"
+                        >
+                            <path
+                                d="M12.5 0c-.24 0-.49.06-.7.19L.7 6.59c-.1.07-.1.18 0 .24l11.1 6.4c.43.26.97.26 1.4 0l11.1-6.4c.1-.06.1-.17 0-.24L13.2.19a1.41 1.41 0 0 0-.7-.19zm0 5.76a1.65.95 0 0 1 1.65.95 1.65.95 0 0 1-1.65.96 1.65.95 0 0 1-1.65-.96 1.65.95 0 0 1 1.65-.95zM.12 7.66l-.06.02A.16.16 0 0 0 0 7.8v12.8c0 .51.27.98.7 1.23l11.1 6.4c.1.07.2.01.2-.12v-12.8c0-.5-.26-.97-.7-1.23L.2 7.7a.19.19 0 0 0-.09-.03zm2.05 3.17a1.65.95 60 0 1 1.41 1.03 1.65.95 60 0 1 0 1.9 1.65.95 60 0 1-1.65-.94 1.65.95 60 0 1 0-1.91 1.65.95 60 0 1 .24-.08zm6.5 11.26a1.65.95 60 0 1 1.4 1.03 1.65.95 60 0 1 0 1.9 1.65.95 60 0 1-1.64-.95 1.65.95 60 0 1 0-1.9 1.65.95 60 0 1 .24-.08zM24.88 7.66a.19.19 0 0 0-.09.03L13.7 14.1c-.43.26-.7.72-.7 1.23v12.8c0 .13.1.19.2.12l11.1-6.4c.43-.25.7-.72.7-1.22V7.82c0-.07-.02-.12-.06-.14a.1.1 0 0 0-.06-.02zm-2.05 3.17a.95 1.65 30 0 1 .24.08.95 1.65 30 0 1 0 1.9.95 1.65 30 0 1-1.65.96.95 1.65 30 0 1 0-1.9.95 1.65 30 0 1 1.41-1.04zm-3.25 5.63a.95 1.65 30 0 1 .25.08.95 1.65 30 0 1 0 1.9.95 1.65 30 0 1-1.66.96.95 1.65 30 0 1 0-1.91.95 1.65 30 0 1 1.41-1.03zm-3.25 5.63a.95 1.65 30 0 1 .25.07.95 1.65 30 0 1 0 1.91.95 1.65 30 0 1-1.66.95.95 1.65 30 0 1 0-1.9.95 1.65 30 0 1 1.41-1.03z"
+                            />
+                        </svg>
+                    </button>
+                    <button
+                        class="w-14 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                        id="play-cantus"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            xml:space="preserve"
+                            viewBox="0 0 60 52"
+                        >
+                            <path
+                                d="M36.5 32.6c-4.7-1.4-3.3-2.6 1-4.3 2.2-.8 1-2.5 1-3.8 0-.6 2.4-.5 2.3-3-.2-1.5-3.9-4-4.9-5-.5-.5 1.2-2.2 0-3.6-1.7-2-2-5.3-3-7.1 0 0 .8-1.2.2-2C28-2 8.6-1.3 3.6 7.3c-5.5 9.7-5.6 23 6 30.2C14.6 40.7 8 52 8 52h20.3c0-2-2.2-9 1.7-8.6 3.5.3 7.7 0 7.3-3.7 0-1.2-.2-2.3.6-3.3s2-2.7-1.5-3.8m4.7-1.8 19 2.5v-5zM56.5 47l2-4.2L41 33.4zm2-28.2-2-4.3L41 28z"
+                            />
+                        </svg>
+                    </button>
+                    <button
+                        class="w-10 flex justify-center items-center fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                        id="solfa"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            xml:space="preserve"
+                            viewBox="0 0 83.7 118.1"
+                            id="hand"
+                            class="hidden"
+                        >
+                            <path
+                                d="M42.5 4.8c-.6 2.7-.2 5.9 0 8.5l-.5 21c-.1 5.1 0 10.2.2 15.3-2.4 4.6-4-4.6-4.5-6.9-.3-2.1-1-4.2-1.5-6.3C34.2 28 32 19.6 31 11c0-1-.6-1.8-1.2-2.5-2.3-2.6-6.8-2-7.5 1.6v3c0 7.1.5 14.2 1.6 21.3l.8 5.2c.7 4.1 3.9 16.9 1.5 25.2-.3 3.8-.6 6 0 9 0 .2-.5 2.6-1.4 2.5-5.7-.7-5.4-12.7-9-16.6-3-4.5-10.3-7.7-15-4.2-3.2 5 4.6 9.4 5 14.8a61 61 0 0 1 6 19c1 5.4 6.5 8 8.7 12.6 4 5.7 8.6 12.7 16.2 13.2 6.3 1.5 12.7 3.1 19.2 3 5.7-.2 15.4 1.5 16.3-6.3.2-1.8.7-3.4 1.2-5.1l.6-2c1.6-4.8 3.5-9.6 3-14.8.2-10.4 2.6-20.5 2.8-31l1.2-7.4.3-1.8 1-6.7.3-2.5c.4-2.4 1-4.7 1-7 0-3.4.4-4.4-.3-5.2-2.4-2.5-4.5-1.5-6 .7a10 10 0 0 0-1.2 2 31 31 0 0 0-1.7 5.4c-1.3 5-.5 5.5-2.4 13.3 0 0-1 3.7-1.9 5.4l.3-7.4c.6-12.2.8-24.5.6-36.7l-.3-2.2c-.5-4-7.4-5.6-8 .2-.7 5.9-1.1 12-1.3 14.3l-.6 4.6c-1 6.8-1 13.7-2.4 20.4-2.3 7.2-5.2-3.3-4.7-6.3v-7.7c.1-3.4-.1-7.5-.2-11-.5-6.4 0-12.7-2.2-18.9l-1-2.4c-.8-1.2-2.2-2-3.7-2-2.5.3-3.4 2.7-4 4.8z"
+                            />
+                        </svg>
+                        <div class="w-9" id="fist">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                xml:space="preserve"
+                                viewBox="0 0 59.9 67.1"
+                            >
+                                <path
+                                    d="M15.2 0h-1c-4.1.3-7.7 4.5-9.5 8.3a46.3 46.3 0 0 0-1.2 17.4c1.3-2.4 2.6-5.2 3.8-7.8v-.1c-.2-6.7.8-7.9 1.3-8 .5 0-.5.7-.5 6.4 1-1.9 1.9-3.4 2.8-4.2.7-.6 1.8-.8 3-.8s2.8.2 4.4.5l3 .6-.8-8.5v-.4C19.5 2.2 19 .1 15.2 0zm11 1.3c-2.6 0-4 1.5-5 2.2l.1.3.7 8.7 5.4 1c1.7.2 4.4-.4 6.6-.5h.7l-1-7.6s-2.8-3.7-6.3-4a8 8 0 0 0-1.2-.1zm14 3c-2.8 0-4.8.8-5.6 1.2l.9 7.4c.6 0 1.1.1 1.6.3.8.3 1.5 1 1.5 2 .3 3-1.1 5.3-3.3 6.9l-2 10.7v.4l.4.3c.3.3 1 .5 1.7.6 1.4.3 3.2.4 4.4.6a4.7 4.7 0 0 0 4.6-1.5l.2-.3c.3-.3.6-.7.8-1.2a24 24 0 0 0 2.4-8.8c.6-6 .2-12 0-13.9 0 0-3-4.2-6.4-4.6L40 4.3zm12.4 4.5c-1.5 0-3.2.3-4 .5.5 4.6.4 9.2 0 13.7-.4 3.4-1.1 6.7-2.5 9.1a3 3 0 0 1-.9 1.3c3.5 2.8 7 3.2 10.6 1.5l.4-.2c1.7-3.9 3.2-8 3.6-12.2.1-4.9 1-9.8-4.8-13.2a5 5 0 0 0-2.4-.5zM14 12c-1.2 0-2 .2-2.6.6-.9.7-2 2.8-3.2 5.3v.3H8C5.7 24 2.3 29 .1 34.7c-1.4 3.8 11 26 17.3 32 1 1 35.5.5 38.5-3.7 4-4.8 2-18.3.2-27.3-4 1.9-7.8 1.3-11.4-1.6a5.6 5.6 0 0 1-5 1.5l-4.5-.6a6 6 0 0 1-2-.7l-.6-.6-.4.2c-.6.3-1.2.4-2 .6a15 15 0 0 1-3.6.3c-2-.2-3.4-1-4.2-1.9a5 5 0 0 1-1.1-3.3c0-1.6.4-3 .7-3.8h-2.8l-1 4.7c6.8 5 10.8 6.1 13.7 9 3 2.9 4.9 7.5 7.5 19.7v.4l-.7.2v-.4C36 47 34.1 42.7 31.3 40c-2.8-2.7-6.8-3.8-13.8-9.1l-.2-.2 1-5.1h-.7c-1.1-.2-2-.4-2.6-.7-.3 0-.8-.4-1-.7l1.4.2c.4.2 1.2.2 2.3.3l3 .2h2l3.3-.4a21 21 0 0 0 8.5-2.9v-.2h.3c2-1.4 3.1-3.4 3-6.1-.1-.8-.4-1.1-1-1.4-.7-.2-1.7-.2-2.8-.1-2.2.1-4.8.7-6.8.5a56 56 0 0 1-5.7-1h-.3V13a110.2 110.2 0 0 0-7.2-1zm20.4 10.7a22.6 22.6 0 0 1-8.2 2.6l-3.3.3c-.2.6-.8 2.2-.8 3.9 0 1 .2 2 .9 2.8.7.8 1.8 1.4 3.7 1.6a15.6 15.6 0 0 0 5.2-.8c.2 0 .4-.2.5-.3v-.1z"
+                                    paint-order="fill markers stroke"
+                                />
+                            </svg>
+                        </div>
+                    </button>
+                    <button
+                        class="w-8 flex justify-center items-center fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                        id="edit"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            xml:space="preserve"
+                            viewBox="0 0 89.4 153.8"
+                        >
+                            <g>
+                                <path
+                                    d="M2.4 0H0a89.1 89.1 0 0 1 18.2 32.4c5.1 3.6 10.4 7.2 14.6 10.8l-13-6 4.4 14.1c7.6 4.9 15 10 22 16L26 56.6c6 16.7 15 34.4 38.2 53.8-3.1-33.7-15-68.8-41.5-92.1 25.2 14.3 43.2 52.7 47.6 121 .4-10 .3-19.3-.4-28.2a81.8 81.8 0 0 0-1.6-57.7c-.7 8-1.2 15.5-2.7 22-.2-8.7-.3-17.8.1-27.4C50.4 18.3 19 .8 2.4 0z"
+                                />
+                                <path
+                                    d="M57.9 119.9c-.8 0-1.4.6-1.4 1.3v4.5c0 .8.6 1.4 1.4 1.4h2.5a.8.8 0 0 1 .7.8v2a.8.8 0 0 1-.7.8H56a4.5 4.5 0 0 0-4.5 4l-1.4 15a3.7 3.7 0 0 0 3.7 4.1h31.8c2.2 0 4-1.8 3.7-4l-1.4-15c-.2-2.3-2.1-4-4.4-4H79a.8.8 0 0 1-.8-.9v-2a.8.8 0 0 1 .8-.8h2.5c.7 0 1.4-.6 1.4-1.4v-4.5c0-.7-.7-1.3-1.4-1.3z"
+                                />
+                            </g>
+                        </svg>
+                    </button>
+                </div>
+            </section>
 
-      <div
-        class="mt-100 flex bg-stone-800/10 dark:bg-stone-800 rounded-full text-stone-700 dark:text-orange-100"
-      >
-        <button
-          id="section-button-1"
-          class="flex items-center gap-1 px-15 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 -960 960 960"
-            class="w-8"
-          >
-            <path
-              d="M400-120q-66 0-113-47t-47-113q0-66 47-113t113-47q23 0 42.5 5.5T480-418v-422h240v160H560v400q0 66-47 113t-113 47Z"
-            />
-          </svg>
-          Cantus
-        </button>
-        <button
-          id="section-button-2"
-          class="flex items-center gap-1 px-15 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 -960 960 960"
-            class="w-8"
-          >
-            <path
-              d="M480-120q-66 0-113-47t-47-113q0-66 47-113t113-47q23 0 42.5 5.5T560-418v-422h240v160H640v400q0 66-47 113t-113 47ZM280-520v-120H160v-80h120v-120h80v120h120v80H360v120h-80Z"
-            />
-          </svg>
-          Counterpoint
-        </button>
-        <button
-          id="section-button-3"
-          class="flex items-center gap-1 px-15 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 -960 960 960"
-            class="w-8"
-          >
-            <path
-              d="m256-120-56-56 193-194q23-23 35-52t12-61v-204l-64 63-56-56 160-160 160 160-56 56-64-63v204q0 32 12 61t35 52l193 194-56 56-224-224-224 224Z"
-            />
-          </svg>
-          Unfold
-        </button>
-        <button
-          id="section-button-4"
-          class="flex items-center gap-1 px-15 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 -960 960 960"
-            class="w-8"
-          >
-            <path
-              d="M520-600v-80h120v-160h80v160h120v80H520Zm120 480v-400h80v400h-80Zm-400 0v-160H120v-80h320v80H320v160h-80Zm0-320v-400h80v400h-80Z"
-            />
-          </svg>
-          Settings
-        </button>
-      </div>
-    </main>
+            <section id="section-2" class="flex flex-col items-center">
+                <div id="ctp"></div>
+                <div class="flex gap-10 items-center">
+                    <div
+                        class="flex flex-col items-center text-dark-900 dark:text-orange-100 text-center text-2xl w-24"
+                    >
+                        <div
+                            class="text-sm text-stone-700/50 dark:text-orange-100/50"
+                        >
+                            Solutions:
+                        </div>
+                        <span id="solutions-label">0</span>
+                    </div>
+                    <button
+                        class="w-10 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-700 dark:active:fill-orange-50 active:scale-90 transition"
+                        id="randomise-both"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            xml:space="preserve"
+                            viewBox="0 0 50 42.4"
+                        >
+                            <path
+                                d="m37.5 14.1-.7.2-11.1 6.4v.3l11.1 6.4c.4.2 1 .2 1.4 0L49.3 21v-.3l-11.1-6.4a1.4 1.4 0 0 0-.7-.2zm0 5.8a1.6 1 0 0 1 1.6 1 1.6 1 0 0 1-1.6 1 1.6 1 0 0 1-1.6-1 1.6 1 0 0 1 1.6-1zm-12.4 1.9a.2.2 0 0 0-.1.1v12.8c0 .5.3 1 .7 1.3l11.1 6.4c.1 0 .2 0 .2-.2V29.4c0-.5-.3-1-.7-1.2l-11.1-6.4zm2 3.2a1.6 1 60 0 1 1.5 1 1.6 1 60 0 1 0 1.9 1.6 1 60 0 1-1.7-1 1.6 1 60 0 1 0-1.9 1.6 1 60 0 1 .3 0zm6.6 11.2a1.6 1 60 0 1 1.4 1 1.6 1 60 0 1 0 2 1.6 1 60 0 1-1.7-1 1.6 1 60 0 1 0-1.9 1.6 1 60 0 1 .3 0zm16.2-14.4a.2.2 0 0 0-.1 0l-11.1 6.4c-.4.3-.7.8-.7 1.3v12.8c0 .1.1.2.2 0L49.3 36c.4-.3.7-.7.7-1.2v-13a.1.1 0 0 0-.1 0zm-2 3.2a1 1.6 30 0 1 .2 0 1 1.6 30 0 1 0 2 1 1.6 30 0 1-1.7 1 1 1.6 30 0 1 0-2 1 1.6 30 0 1 1.4-1zm-3.3 5.6a1 1.6 30 0 1 .2 0 1 1.6 30 0 1 0 2 1 1.6 30 0 1-1.6 1 1 1.6 30 0 1 0-2 1 1.6 30 0 1 1.4-1zm-3.3 5.6a1 1.6 30 0 1 .3.1 1 1.6 30 0 1 0 2 1 1.6 30 0 1-1.7.9 1 1.6 30 0 1 0-2 1 1.6 30 0 1 1.4-1zM12.5 0c-.2 0-.5 0-.7.2L.7 6.6c-.1 0-.1.2 0 .2l11.1 6.4c.4.3 1 .3 1.4 0l11.1-6.4c.1 0 .1-.1 0-.2L13.2.2a1.4 1.4 0 0 0-.7-.2zm0 5.8a1.6 1 0 0 1 1.6 1 1.6 1 0 0 1-1.6.9 1.6 1 0 0 1-1.6-1 1.6 1 0 0 1 1.6-1zM.1 7.7a.2.2 0 0 0-.1.1v12.8c0 .5.3 1 .7 1.2l11.1 6.4c.1.1.2 0 .2 0v-13c0-.5-.3-1-.7-1.2L.2 7.7zm2 3.1a1.6 1 60 0 1 1.5 1 1.6 1 60 0 1 0 2 1.6 1 60 0 1-1.7-1A1.6 1 60 0 1 2 11a1.6 1 60 0 1 .3 0zm6.6 11.3a1.6 1 60 0 1 1.4 1 1.6 1 60 0 1 0 2 1.6 1 60 0 1-1.7-1 1.6 1 60 0 1 0-2 1.6 1 60 0 1 .3 0zM24.9 7.7a.2.2 0 0 0-.1 0L13.7 14c-.4.3-.7.7-.7 1.2V28c0 .2.1.2.2.2l11.1-6.4c.4-.3.7-.8.7-1.3V7.7a.1.1 0 0 0-.1 0zm-2 3.1a1 1.6 30 0 1 .2.1 1 1.6 30 0 1 0 2 1 1.6 30 0 1-1.7.9 1 1.6 30 0 1 0-2 1 1.6 30 0 1 1.4-1zm-3.3 5.7a1 1.6 30 0 1 .2 0 1 1.6 30 0 1 0 2 1 1.6 30 0 1-1.6.9 1 1.6 30 0 1 0-2 1 1.6 30 0 1 1.4-1zM16.3 22a1 1.6 30 0 1 .3 0 1 1.6 30 0 1 0 2 1 1.6 30 0 1-1.7 1 1 1.6 30 0 1 0-2 1 1.6 30 0 1 1.4-1z"
+                            />
+                        </svg>
+                    </button>
+                    <button
+                        class="w-10 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                        id="randomise-ctp"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            xml:space="preserve"
+                            viewBox="0 0 25 28.27"
+                        >
+                            <path
+                                d="M12.5 0c-.24 0-.49.06-.7.19L.7 6.59c-.1.07-.1.18 0 .24l11.1 6.4c.43.26.97.26 1.4 0l11.1-6.4c.1-.06.1-.17 0-.24L13.2.19a1.41 1.41 0 0 0-.7-.19zm0 5.76a1.65.95 0 0 1 1.65.95 1.65.95 0 0 1-1.65.96 1.65.95 0 0 1-1.65-.96 1.65.95 0 0 1 1.65-.95zM.12 7.66l-.06.02A.16.16 0 0 0 0 7.8v12.8c0 .51.27.98.7 1.23l11.1 6.4c.1.07.2.01.2-.12v-12.8c0-.5-.26-.97-.7-1.23L.2 7.7a.19.19 0 0 0-.09-.03zm2.05 3.17a1.65.95 60 0 1 1.41 1.03 1.65.95 60 0 1 0 1.9 1.65.95 60 0 1-1.65-.94 1.65.95 60 0 1 0-1.91 1.65.95 60 0 1 .24-.08zm6.5 11.26a1.65.95 60 0 1 1.4 1.03 1.65.95 60 0 1 0 1.9 1.65.95 60 0 1-1.64-.95 1.65.95 60 0 1 0-1.9 1.65.95 60 0 1 .24-.08zM24.88 7.66a.19.19 0 0 0-.09.03L13.7 14.1c-.43.26-.7.72-.7 1.23v12.8c0 .13.1.19.2.12l11.1-6.4c.43-.25.7-.72.7-1.22V7.82c0-.07-.02-.12-.06-.14a.1.1 0 0 0-.06-.02zm-2.05 3.17a.95 1.65 30 0 1 .24.08.95 1.65 30 0 1 0 1.9.95 1.65 30 0 1-1.65.96.95 1.65 30 0 1 0-1.9.95 1.65 30 0 1 1.41-1.04zm-3.25 5.63a.95 1.65 30 0 1 .25.08.95 1.65 30 0 1 0 1.9.95 1.65 30 0 1-1.66.96.95 1.65 30 0 1 0-1.91.95 1.65 30 0 1 1.41-1.03zm-3.25 5.63a.95 1.65 30 0 1 .25.07.95 1.65 30 0 1 0 1.91.95 1.65 30 0 1-1.66.95.95 1.65 30 0 1 0-1.9.95 1.65 30 0 1 1.41-1.03z"
+                                paint-order="fill markers stroke"
+                            />
+                        </svg>
+                    </button>
+                    <button
+                        class="w-14 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                        id="play-ctp-top"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            xml:space="preserve"
+                            viewBox="0 0 60 52"
+                        >
+                            <path
+                                d="M22.8 0c-7.4-.4-16 2-19.2 7.3-5.5 9.7-5.6 23 6 30.2C14.6 40.7 8 52 8 52h20.3c0-2-2.2-8.9 1.7-8.6 3.5.3 7.7.1 7.3-3.7 0-1.2-.2-2.3.6-3.3s2-2.7-1.5-3.8h.1c-4.7-1.4-3.3-2.6 1-4.3 2.2-.8 1-2.5 1-3.8 0-.6 2.4-.5 2.3-2.9-.2-1.6-3.9-4-4.9-5-.5-.6 1.2-2.3 0-3.7-1.7-1.9-2-5.3-3-7 0 0 .8-1.3.2-2-2-2.3-5.9-3.5-10.3-3.8zm33.7 14.5L41 28l17.5-9.2zm-37.7.7H22v11.2h3.1v2.4h-9.5v-2.4h3v-8.8l-3 .7V16l3.1-.7zM60 28.3l-18.9 2.5 19 2.5zm-19 5.1L56.5 47l2-4.2z"
+                            />
+                        </svg>
+                    </button>
+                    <button
+                        class="w-14 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                        id="play-ctp-bottom"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            xml:space="preserve"
+                            viewBox="0 0 60 52"
+                        >
+                            <path
+                                d="M22.8 0c-7.4-.4-16 2-19.2 7.3-5.5 9.7-5.6 23 6 30.2C14.6 40.7 8 52 8 52h20.3c0-2-2.2-8.9 1.7-8.6 3.5.3 7.7.1 7.3-3.7 0-1.2-.2-2.3.6-3.3s2-2.7-1.5-3.8h.1c-4.7-1.4-3.3-2.6 1-4.3 2.2-.8 1-2.5 1-3.8 0-.6 2.4-.5 2.3-2.9-.2-1.6-3.9-4-4.9-5-.5-.6 1.2-2.3 0-3.7-1.7-1.9-2-5.3-3-7 0 0 .8-1.3.2-2-2-2.3-5.9-3.5-10.3-3.8zm33.7 14.5L41 28l17.5-9.2zm-36.4.6a6 6 0 0 1 3.8 1 4 4 0 0 1 .8 5c-.4.8-1.2 1.6-2.4 2.7l-3 2.6h6V29h-9.8v-2.5l5-4.4 1-1.2.2-1.2a2 2 0 0 0-.6-1.5c-.4-.4-1-.6-1.7-.6l-1.8.3-2 1v-3a16.3 16.3 0 0 1 4.5-.7zm40 13.2-19 2.5 19 2.5zm-19 5.1L56.4 47l2-4.2z"
+                            />
+                        </svg>
+                    </button>
+                    <button
+                        class="w-15 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                        id="play-ctp"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 72 62"
+                        >
+                            <path
+                                id="second-head"
+                                d="M48.5 32.6c-4.7-1.4-3.3-2.6 1-4.3 2.2-.8 1-2.5 1-3.8 0-.6 2.4-.5 2.3-3-.2-1.5-3.9-4-4.9-5-.5-.5 1.2-2.2 0-3.6-1.7-2-2-5.3-3-7.1 0 0 .8-1.2.2-2C40-2 20.6-1.3 15.6 7.3c-5.5 9.7-5.6 23 6 30.2C26.6 40.7 20 52 20 52h20.3c0-2-2.2-9 1.7-8.6 3.5.3 7.7 0 7.3-3.7 0-1.2-.2-2.3.6-3.3s2-2.7-1.5-3.8m4.7-1.8 19 2.5v-5zM68.5 47l2-4.2L53 33.4zm2-28.2-2-4.3L53 28z"
+                            />
+                            <path
+                                d="M36.5 42.6c-4.7-1.4-3.3-2.6 1-4.3 2.2-.8 1-2.5 1-3.8 0-.6 2.4-.5 2.3-3-.2-1.5-3.9-4-4.9-5-.5-.5 1.2-2.2 0-3.6-1.7-2-2-5.3-3-7.1 0 0 .8-1.2.2-2C28 8 8.6 8.7 3.6 17.3c-5.5 9.7-5.6 23 6 30.2C14.6 50.7 8 62 8 62h20.3c0-2-2.2-9 1.7-8.6 3.5.3 7.7 0 7.3-3.7 0-1.2-.2-2.3.6-3.3s2-2.7-1.5-3.8m4.7-1.8 19 2.5v-5zM56.5 57l2-4.2L41 43.4zm2-28.2-2-4.3L41 38z"
+                            />
+                        </svg>
+                    </button>
+                </div>
+            </section>
 
-    <footer class="p-12 flex gap-2 justify-center items-center">
-      <div class="w-8">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          xml:space="preserve"
-          viewBox="0 0 64 64"
-        >
-          <path
-            fill="#c0292a"
-            d="M18.07 36.05a.83.83 0 0 0-.22.03l-2.41.65a1.1 1.1 0 0 0-.77 1.33L21.62 64h4.84L19.2 36.85a1.1 1.1 0 0 0-1.12-.8z"
-          />
-          <path
-            fill="#c0292a"
-            d="m43.7 14.58-.57.12c-6.7 1.4-10.22 1.9-15.08.54l-.99-.27a26.78 26.78 0 0 0-4.6 3.45l-.16.98c-1.23 7.63-4.5 10.5-7.57 13.57l-.4.41a13.22 13.22 0 0 0 .35 4.67c1.5 5.57 6.92 8.17 13.86 6.32C39.58 41.4 48.8 28.35 46.3 18.99a9.13 9.13 0 0 0-2.6-4.41zm6.24 40.94-1.12 3.33A37.31 37.31 0 0 1 50.51 64h4.78c-.12-.63-.26-1.26-.43-1.9a43.62 43.62 0 0 0-2.2-6.2l-2.72-.38z"
-          />
-          <path
-            fill="#c0292a"
-            d="M36.7 0c-1.05 5.1-3.05 9.92-7.12 13.93 3.76.84 6.98.56 12.42-.56C40.24 7.42 38.88 3.53 36.7 0ZM4.1 20.07c2.65 4.68 5.5 8.4 10.02 11.34 2.69-2.66 5.03-5.32 6.27-11.04-6.52 2.2-11.6 1.2-16.3-.3zm37.05 21 4.18 23.39 3.59-10.59 10.99 1.56z"
-          />
-        </svg>
-      </div>
-      <div class="text-stone-700 dark:text-orange-100">
-        Made with
-        <a
-          href="https://meantonal.org"
-          class="text-red-400 underline hover:text-red-300 underline-offset-3"
-          >Meantonal</a
-        >
-      </div>
-    </footer>
-    <script src="/cantus.js"></script>
-    <script type="module" src="/src/index.ts"></script>
-  </body>
+            <section
+                id="section-3"
+                class="flex flex-col items-center gap-8 pt-8"
+            >
+                <div id="compound"></div>
+                <div class="flex gap-10 items-center">
+                    <button
+                        class="w-18 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
+                        id="play-compound"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            xml:space="preserve"
+                            version="1.0"
+                            viewBox="0 0 463.6 303.8"
+                        >
+                            <g>
+                                <path
+                                    d="m110.7 99.2-6.7-.4c-1 3-2.8 5.3-5.8 7.1-3 1.7-4.9 1.8-12.2 3.6-7.6 1.6-22.1 3.5-32.4 7a96 96 0 0 0-29 13.5 57.8 57.8 0 0 0-19.3 24c-4.1 10-5 25.4-5.2 35.6-.4 10.1 1 17.6 3.1 24.8 2.1 7 5.1 12.6 9.2 17.3a8 8 0 0 0-.3 7.4 22 22 0 0 0 7 7.7 51.9 51.9 0 0 0 13.5 20.6A128 128 0 0 0 62 290.7a72.9 72.9 0 0 0 32.7 8.3 80 80 0 0 0 32.3-9.2c9.4-4.9 17.5-13.7 24.1-19.4 6.5-5.7 10-11.4 15-14.5a24 24 0 0 1 14.5-4.2l3.3-5.2a9.7 9.7 0 0 1-5.5-5 13 13 0 0 1-1.6-9.6c1-4 3.1-9.5 7.6-14.4 4.5-5.2 13.5-11.8 19-15.6a44 44 0 0 1 13.4-6.6c3.7-1 5.5-1.6 8.6.4 3 2 5.9 5.6 9.1 11.4l7.3.3c1.3-2.8 3-5.1 5.4-7.3 2.3-2.1 3.8-3.6 8.8-5.3 5-1.8 13.6-2.7 21-5.3a98 98 0 0 0 22.3-11.2 46 46 0 0 0 13.6-16.6 56.3 56.3 0 0 0 5.6-24.1 86 86 0 0 0-6-29l102-55.4a215.2 215.2 0 0 1 23.2-13.5c.6.8 1.5 1 3 .4 1.4-.5 3-1.5 5.2-3.4.5 2.6 1.7 3.9 3.4 4.3a11 11 0 0 0 6.8-2.2c1.2-1.4 1.1-3.2.1-5.6 2.2-1 3.6-2.2 4.1-3.3.5-1.2.1-2.2-1-3.5 2.6 0 4-.8 4.2-2.9 0-2.1-1.3-7.7-3-9.2-1.7-1.4-4-1-6.7 1.1-.8-1.7-1.6-2.7-3-3-1.3-.4-2.8.1-4.6 1.2-.8-2.2-1.8-3.8-3.4-4.2a7.1 7.1 0 0 0-5.5.9c-1.4.8-2.3 2.8-2.4 4.2-.2 1.4.3 2.6 1.5 3.9a8 8 0 0 0-4.5 1.8c-1.2 1-1.6 2.3-1.7 4 .2-.7-2.5.1-8.1 2.6-5.8 2.3-14.1 6.1-25.7 11.5L299 83a36.3 36.3 0 0 0-9.5-14c-5-5-12.2-11.8-19.6-15a52.5 52.5 0 0 0-46.7 1.6c-7.5 3.6-16.6 11.5-22 15.4-5.5 3.7-6.6 5.8-10.4 7.1a22.6 22.6 0 0 1-12 .4l-4 6.2c3 2.5 4.8 5.3 4.9 8.4 0 3-.6 6.5-4.4 10a74.9 74.9 0 0 1-40.7 15.4c-6.9 0-14.4-1.7-18.4-5-4-3.2-5.8-7.8-5.5-14.2z"
+                                />
+                                <path
+                                    d="m395.7 39.6-5.5-11c-.7-.2-1.2-.3-1.3-.7-.2-.4 0-.9.4-1.4-.2-.9-.7-1.5-1.2-1.6-.7-.2-1.5.6-2.5.5-1.1-.1-2.8-.4-3.7-1.3a6 6 0 0 1-2.2-4.7c0-2.2 1.3-6.2 2.6-8a6 6 0 0 1 5-3c2-.2 5.1.3 7 1.7a8 8 0 0 1 3.8 5.4c0 1.9-2.8 4.8-3.2 6-.5 1.3-.3 1.6.6 1.2.3 0 .6.2.7.7V25l5.3 10.8-5.8 3.7zm16.9-8.8L406.4 18c.4-.8.3-1.4-.2-1.8s-1.4-.5-2.6-.4c.3-1.8.1-3.7-.5-5.7-.7-2.2-3-5.3-3.3-6.8-.3-1.6 1-2.2 1.8-2.6.8-.5 2.1-1.1 3.1-.2.8 1 .9 3.9 2.2 5.8 1.2 2 3 3.6 5.4 5.3a2 2 0 0 0-.6 1.5c0 .5.4.9.9 1.2l6.3 13.2-5.4 3.3h-.9zm0 21 6.1 12.8c.9.2 1.3.7 1.3 1.3 0 .5-.5 1.4-1.3 2.3 1.5.9 3 2.2 4.2 4 1.3 1.8 2.1 5.5 3.3 6.8 1 1 2.1.5 3 .1 1-.4 2.4-1 2.2-2.3-.3-1.3-2.5-3.2-3.2-5.3-.7-2.2-1-4.6-.8-7.5-.7 0-1.2-.2-1.5-.5s-.5-.9-.4-1.4L419 49l-6 2.2-.5.7zm13.2-8.6 5.2 11.2c-.3.7-.5 1.3-.2 1.6.1.3.6.5 1.4.5.5.7.6 1.3.4 2-.4.5-1.4.6-2 1.5-.6.9-1.4 2.3-1.2 3.8 0 1.4.6 3.2 2.3 4.5 1.7 1.2 5.6 2.9 8 3a7 7 0 0 0 5.4-2c1.3-1.5 2.8-4.5 3-6.6.1-2.2-.4-5-1.9-6.3-1.5-1.2-5.7-1-6.8-1.2-1.3-.4-1.4-1-.4-1.3a1 1 0 0 0-.1-1c-.3-.2-.8-.7-1.5-1L432.3 41l-6.6 2.2z"
+                                />
+                            </g>
+                        </svg>
+                    </button>
+                </div>
+            </section>
+
+            <section
+                id="section-4"
+                class="flex flex-col items-center gap-16 pt-16"
+            >
+                <div class="flex items-center justify-center gap-16">
+                    <div class="flex flex-col items-center gap-1">
+                        <div
+                            class="text-sm text-stone-700/50 dark:text-orange-100/50"
+                        >
+                            Equal Temperament:
+                        </div>
+                        <div
+                            class="flex bg-stone-800/10 dark:bg-stone-800 rounded-full text-stone-700 dark:text-orange-100"
+                            id="edo-buttons"
+                        >
+                            <button
+                                id="edo-12"
+                                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                            >
+                                12
+                            </button>
+                            <button
+                                id="edo-19"
+                                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                            >
+                                19
+                            </button>
+                            <button
+                                id="edo-31"
+                                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                            >
+                                31
+                            </button>
+                            <button
+                                id="edo-50"
+                                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                            >
+                                50
+                            </button>
+                            <button
+                                id="edo-53"
+                                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                            >
+                                53
+                            </button>
+                            <button
+                                id="edo-55"
+                                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                            >
+                                55
+                            </button>
+                        </div>
+                    </div>
+                    <div
+                        class="flex flex-col gap-2 items-center justify-center"
+                    >
+                        <div class="flex justify-center items-center gap-4">
+                            <div
+                                class="w-7 fill-stone-700 dark:fill-orange-100"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 86.9 132"
+                                >
+                                    <path
+                                        d="M29.3 0 9.5 86.4h20.3c1.6-4.1 5.2-7.1 9.5-7.9V66h-.1a2 2 0 1 1 0-3.8V49.3a2 2 0 1 1 0-3.8V32.8a2 2 0 1 1 0-3.9V16.2a2 2 0 1 1 0-3.8V8h4.4v4.4h.1a2 2 0 1 1 0 3.8v12.7a2 2 0 1 1 0 3.9v12.7a2 2 0 1 1 0 3.8v12.8a2 2 0 1 1 0 3.8v12.6h.2l19.8-34.3L53.7 0zm55.6 13.6a2 2 0 0 0-1.8 1l-2.8 4.8L78 18l-5 11 1.4.8-34.6 60a2 2 0 0 0 .8 2.7 2 2 0 0 0 1.2.2 2 2 0 0 0 1-.4 2 2 0 0 0 .3-.3 2 2 0 0 0 .2-.3l34.6-59.9 1.5.9 7-10-2.5-1.3 2.8-4.8a2 2 0 0 0-.7-2.8 2 2 0 0 0-1-.2zm-18.5 42-15.6 27c1 1 1.7 2.4 2.3 3.8h20.3zm-25 26.8a8.4 8.4 0 0 0-8.3 8.3 8.4 8.4 0 0 0 8.4 8.4 8.4 8.4 0 0 0 8.3-8.4 8.4 8.4 0 0 0-1.2-4.3l-3.7 6.3a4 4 0 0 1-5.4 1.5 4 4 0 0 1-1.5-5.5l3.7-6.3a8.4 8.4 0 0 0-.2 0zM7.6 95 0 128v4h8.3v-4h66.3v4H83v-4l-7.5-33H53a12.4 12.4 0 0 1-23.3 0z"
+                                    />
+                                </svg>
+                            </div>
+                            <div
+                                class="flex flex-col items-center text-stone-700 dark:text-orange-100 text-2xl w-12"
+                            >
+                                <div
+                                    class="text-sm text-stone-700/50 dark:text-orange-100/50"
+                                >
+                                    BPM:
+                                </div>
+                                <span id="bpm-label">80</span>
+                            </div>
+                        </div>
+                        <div class="appearance-none accent-orange-200">
+                            <input
+                                class="slider"
+                                type="range"
+                                list="tickmarks"
+                                min="40"
+                                max="208"
+                                value="80"
+                                step="2"
+                                id="bpm-slider"
+                            />
+                            <datalist id="tickmarks">
+                                <option value="40"></option>
+                                <option value="42"></option>
+                                <option value="44"></option>
+                                <option value="46"></option>
+                                <option value="48"></option>
+                                <option value="50"></option>
+                                <option value="52"></option>
+                                <option value="54"></option>
+                                <option value="56"></option>
+                                <option value="58"></option>
+                                <option value="60"></option>
+                                <option value="63"></option>
+                                <option value="66"></option>
+                                <option value="69"></option>
+                                <option value="72"></option>
+                                <option value="76"></option>
+                                <option value="80"></option>
+                                <option value="84"></option>
+                                <option value="88"></option>
+                                <option value="92"></option>
+                                <option value="96"></option>
+                                <option value="100"></option>
+                                <option value="104"></option>
+                                <option value="108"></option>
+                                <option value="112"></option>
+                                <option value="116"></option>
+                                <option value="120"></option>
+                                <option value="126"></option>
+                                <option value="132"></option>
+                                <option value="138"></option>
+                                <option value="144"></option>
+                                <option value="152"></option>
+                                <option value="160"></option>
+                                <option value="168"></option>
+                                <option value="176"></option>
+                                <option value="184"></option>
+                                <option value="192"></option>
+                                <option value="200"></option>
+                                <option value="208"></option>
+                            </datalist>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center gap-1">
+                        <div
+                            class="text-sm text-stone-700/50 dark:text-orange-100/50"
+                        >
+                            Waveform
+                        </div>
+                        <div
+                            class="flex bg-stone-800/10 dark:bg-stone-800 rounded-full text-stone-700 dark:text-orange-100"
+                            id="waveform-buttons"
+                        >
+                            <button
+                                id="triangle"
+                                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 94.7 94.6"
+                                    class="w-6"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        fill="none"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="10"
+                                        d="M6 47.3 26.6 6 68 88.6l20.7-41.3"
+                                    />
+                                </svg>
+                            </button>
+                            <button
+                                id="sawtooth"
+                                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 94.7 94.6"
+                                    class="w-6"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        fill="none"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="10"
+                                        d="M6 47.3V6l82.6 82.5V47.3"
+                                    />
+                                </svg>
+                            </button>
+                            <button
+                                id="square"
+                                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 94.7 94.6"
+                                    class="w-6"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        fill="none"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="10"
+                                        d="M6 47.3V6h41.3v82.5h41.3V47.3"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex flex-col items-center gap-1">
+                        <div
+                            class="text-sm text-stone-700/50 dark:text-orange-100/50"
+                        >
+                            Theme:
+                        </div>
+                        <div
+                            class="flex bg-stone-800/10 dark:bg-stone-800 rounded-full text-stone-700 dark:text-orange-100"
+                            id="theme-buttons"
+                        >
+                            <button
+                                id="light-mode"
+                                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    height="24px"
+                                    viewBox="0 -960 960 960"
+                                    width="24px"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        d="M480-360q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 80q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"
+                                    />
+                                </svg>
+                            </button>
+                            <button
+                                id="dark-mode"
+                                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    height="24px"
+                                    viewBox="0 -960 960 960"
+                                    width="24px"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"
+                                    />
+                                </svg>
+                            </button>
+                            <button
+                                id="system-mode"
+                                class="flex items-center gap-1 px-4 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    height="24px"
+                                    viewBox="0 -960 960 960"
+                                    width="24px"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        d="M40-120v-80h880v80H40Zm120-120q-33 0-56.5-23.5T80-320v-440q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v440q0 33-23.5 56.5T800-240H160Zm0-80h640v-440H160v440Zm0 0v-440 440Z"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div
+                class="mt-100 flex bg-stone-800/10 dark:bg-stone-800 rounded-full text-stone-700 dark:text-orange-100"
+            >
+                <button
+                    id="section-button-1"
+                    class="flex items-center gap-1 px-15 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 -960 960 960"
+                        class="w-8"
+                    >
+                        <path
+                            d="M400-120q-66 0-113-47t-47-113q0-66 47-113t113-47q23 0 42.5 5.5T480-418v-422h240v160H560v400q0 66-47 113t-113 47Z"
+                        />
+                    </svg>
+                    Cantus
+                </button>
+                <button
+                    id="section-button-2"
+                    class="flex items-center gap-1 px-15 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 -960 960 960"
+                        class="w-8"
+                    >
+                        <path
+                            d="M480-120q-66 0-113-47t-47-113q0-66 47-113t113-47q23 0 42.5 5.5T560-418v-422h240v160H640v400q0 66-47 113t-113 47ZM280-520v-120H160v-80h120v-120h80v120h120v80H360v120h-80Z"
+                        />
+                    </svg>
+                    Counterpoint
+                </button>
+                <button
+                    id="section-button-3"
+                    class="flex items-center gap-1 px-15 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 -960 960 960"
+                        class="w-8"
+                    >
+                        <path
+                            d="m256-120-56-56 193-194q23-23 35-52t12-61v-204l-64 63-56-56 160-160 160 160-56 56-64-63v204q0 32 12 61t35 52l193 194-56 56-224-224-224 224Z"
+                        />
+                    </svg>
+                    Unfold
+                </button>
+                <button
+                    id="section-button-4"
+                    class="flex items-center gap-1 px-15 py-4 rounded-full hover:bg-stone-700/10 dark:hover:bg-stone-700 active:bg-stone-500/10 dark:active:bg-stone-600 transition-colors"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 -960 960 960"
+                        class="w-8"
+                    >
+                        <path
+                            d="M520-600v-80h120v-160h80v160h120v80H520Zm120 480v-400h80v400h-80Zm-400 0v-160H120v-80h320v80H320v160h-80Zm0-320v-400h80v400h-80Z"
+                        />
+                    </svg>
+                    Settings
+                </button>
+            </div>
+        </main>
+
+        <footer class="p-12 flex gap-2 justify-center items-center">
+            <div class="w-8">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    xml:space="preserve"
+                    viewBox="0 0 64 64"
+                >
+                    <path
+                        fill="#c0292a"
+                        d="M18.07 36.05a.83.83 0 0 0-.22.03l-2.41.65a1.1 1.1 0 0 0-.77 1.33L21.62 64h4.84L19.2 36.85a1.1 1.1 0 0 0-1.12-.8z"
+                    />
+                    <path
+                        fill="#c0292a"
+                        d="m43.7 14.58-.57.12c-6.7 1.4-10.22 1.9-15.08.54l-.99-.27a26.78 26.78 0 0 0-4.6 3.45l-.16.98c-1.23 7.63-4.5 10.5-7.57 13.57l-.4.41a13.22 13.22 0 0 0 .35 4.67c1.5 5.57 6.92 8.17 13.86 6.32C39.58 41.4 48.8 28.35 46.3 18.99a9.13 9.13 0 0 0-2.6-4.41zm6.24 40.94-1.12 3.33A37.31 37.31 0 0 1 50.51 64h4.78c-.12-.63-.26-1.26-.43-1.9a43.62 43.62 0 0 0-2.2-6.2l-2.72-.38z"
+                    />
+                    <path
+                        fill="#c0292a"
+                        d="M36.7 0c-1.05 5.1-3.05 9.92-7.12 13.93 3.76.84 6.98.56 12.42-.56C40.24 7.42 38.88 3.53 36.7 0ZM4.1 20.07c2.65 4.68 5.5 8.4 10.02 11.34 2.69-2.66 5.03-5.32 6.27-11.04-6.52 2.2-11.6 1.2-16.3-.3zm37.05 21 4.18 23.39 3.59-10.59 10.99 1.56z"
+                    />
+                </svg>
+            </div>
+            <div class="text-stone-700 dark:text-orange-100">
+                Made with
+                <a
+                    href="https://meantonal.org"
+                    class="text-red-400 underline hover:text-red-300 underline-offset-3"
+                    >Meantonal</a
+                >
+            </div>
+        </footer>
+        <script type="module" src="/src/index.ts"></script>
+    </body>
 </html>

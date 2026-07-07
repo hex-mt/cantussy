@@ -2,10 +2,14 @@
 #define CHUNKS_H
 
 #include "meantonal.h"
-#include <emscripten/emscripten.h>
 #include <stdio.h>
 
 #define MAX_CHUNKS 32
+
+// Capacity of the bump-allocated arena backing every chunk_node produced by
+// generate_chunks(). Sized generously above the number of chunks the current
+// rule set actually produces; create_chunk() guards against exceeding it.
+#define NODE_POOL_SIZE 10000
 
 typedef struct chunk {
     Interval cons;
@@ -25,11 +29,10 @@ extern Interval motions[MELODIC_INDEX_COUNT];
 extern Interval consonances[HARMONIC_INDEX_COUNT];
 
 extern chunk_node *data[MELODIC_INDEX_COUNT][HARMONIC_INDEX_COUNT];
-extern chunk_node node_pool[10000];
+extern chunk_node node_pool[NODE_POOL_SIZE];
 
 chunk_node *create_chunk(void);
 
-EMSCRIPTEN_KEEPALIVE
 void generate_chunks(void);
 
 int map_melodic_index(Interval m);
@@ -37,8 +40,6 @@ int map_melodic_index(Interval m);
 int map_harmonic_index(Interval m);
 
 void add_chunk(Interval i, Interval j, chunk c);
-
-void print_chunks(Interval i, Interval j);
 
 void shuffle_list(chunk_node **head);
 

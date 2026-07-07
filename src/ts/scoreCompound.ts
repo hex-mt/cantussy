@@ -1,14 +1,24 @@
 import { Pitch } from "meantonal";
-import { audio, mapLower53, mapUpper53 } from "./audio.js";
+import { audio } from "./audio.js";
 import { state } from "./state.js";
+import {
+    respellUpperVoiceForAdaptiveJI,
+    respellLowerVoiceForAdaptiveJI
+} from "./adaptiveJI.js";
+
+// Reference pitches used to pick the nearest of the 3 clef options for the
+// single-staff unfolded compound melody.
+const TREBLE_CLEF_CENTER = new Pitch(30, 11);
+const TREBLE_8VB_CLEF_CENTER = new Pitch(25, 9);
+const BASS_CLEF_CENTER = new Pitch(21, 8);
 
 function unfoldCtp() {
     return state.lowerVoice.flatMap((val, i) => [val, state.upperVoice[i], val]);
 }
 
 function unfoldAdjustedCtp() {
-    const upper = mapUpper53();
-    const lower = mapLower53();
+    const upper = respellUpperVoiceForAdaptiveJI(state.upperVoice, state.lowerVoice);
+    const lower = respellLowerVoiceForAdaptiveJI(state.upperVoice, state.lowerVoice);
     return lower.flatMap((val, i) => [val, upper[i], val]);
 }
 
@@ -24,19 +34,14 @@ export async function drawCompound() {
     state.compound = unfoldCtp();
     state.compoundAdjusted =
         audio.currentEDO === 53 ? unfoldAdjustedCtp() : state.compound;
-    // for (let i = 0; i < state.compound.length; i++) {
-    //     if (i % 4 === 2) {
-    //         [state.compound[i], state.compound[i + 1]] = [state.compound[i + 1], state.compound[i]];
-    //     }
-    // }
 
     const top = Pitch.highest(state.compound);
     const bottom = Pitch.lowest(state.compound);
     let middle = new Pitch((top.w + bottom.w) / 2, (top.h + bottom.h) / 2);
     let clefIndex = [
-        new Pitch(30, 11),
-        new Pitch(25, 9),
-        new Pitch(21, 8),
+        TREBLE_CLEF_CENTER,
+        TREBLE_8VB_CLEF_CENTER,
+        BASS_CLEF_CENTER,
     ].reduce(
         (a, c, i) => {
             const distance = Math.abs(middle.stepsTo(c));

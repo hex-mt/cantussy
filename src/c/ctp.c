@@ -8,17 +8,17 @@
 
 Interval firstInts[] = {(Interval){5, 2}, (Interval){3, 1}, (Interval){0, 0},
                         (Interval){-5, -2}};
-extern int cantus[32];
-Pitch mt_cantus[32] = {0};
-Interval cantus_motions[32] = {0};
-Pitch mt_ctp[32] = {0};
-Interval ctp_motions[32] = {0};
-Interval v_ints[32] = {0};
+extern int cantus[MAX_BARS];
+Pitch mt_cantus[MAX_BARS] = {0};
+Interval cantus_motions[MAX_BARS] = {0};
+Pitch mt_ctp[MAX_BARS] = {0};
+Interval ctp_motions[MAX_BARS] = {0};
+Interval v_ints[MAX_BARS] = {0};
 TonalContext context;
 Pitch tonic;
 TuningMap T;
 
-Pitch result_ctp[32] = {0};
+Pitch result_ctp[MAX_BARS] = {0};
 int solutions = 0;
 
 EMSCRIPTEN_KEEPALIVE
@@ -104,7 +104,7 @@ void next_chunk(CtpState state) {
         if (range > 9)
             continue;
 
-        int to_fill[19];
+        int to_fill[CTP_FILL_LEN];
         bool must_fill = state.must_fill;
 
         if (ctp_registral_break(&state, &must_fill, to_fill, this_note,

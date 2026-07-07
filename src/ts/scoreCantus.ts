@@ -1,7 +1,13 @@
 import { Interval, Pitch, SPN } from "meantonal";
 import { state } from "./state.js";
 import { audio } from "./audio.js";
-import { drawCtp } from "./scoreSpecies.js";
+import { cantusInput } from "./domRefs.js";
+
+// The 6 supported cantus-firmus modes (Lydian..Phrygian) map to tonics
+// F, C, G, D, A, E in ascending fifths.
+function deriveTonicLetter(mode: number): string {
+    return "FCGDAEB"[mode];
+}
 
 export async function drawCantus() {
     audio.stop();
@@ -33,7 +39,7 @@ export async function drawCantus() {
     if (!state.customCantus) {
         state.actualMode =
             state.mode != 6 ? state.mode : Math.floor(Math.random() * 6);
-        state.tonicLetter = "FCGDAEB"[state.actualMode];
+        state.tonicLetter = deriveTonicLetter(state.actualMode);
         state.actualLength =
             state.length != 8 ? state.length + 9 : Math.floor(Math.random() * 8) + 9;
 
@@ -78,10 +84,8 @@ export async function drawCantus() {
 
     document.getElementById("cantus")!.innerHTML = svg;
 
-    drawCtp();
-
     state.cantusString = cantusToString(state.cantus);
-    state.cantusInput.value = state.cantusString;
+    cantusInput.value = state.cantusString;
 }
 
 function getSolfa() {

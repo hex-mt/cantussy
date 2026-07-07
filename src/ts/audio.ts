@@ -1,6 +1,10 @@
-import { Interval, Pitch, TuningMap } from "meantonal";
+import { Pitch, TuningMap } from "meantonal";
 import { state } from "./state.js";
-import { drawCompound } from "./scoreCompound.js";
+import {
+    respellCantusForAdaptiveJI,
+    respellUpperVoiceForAdaptiveJI,
+    respellLowerVoiceForAdaptiveJI
+} from "./adaptiveJI.js";
 
 type AudioState = {
     freq: TuningMap;
@@ -88,15 +92,6 @@ async function readyPlayback() {
     }
 }
 
-function mapCantus53() {
-    return state.repositionedCantus.map((p, i) => {
-        if (p.chroma >= 2 && p.chroma < 7)
-            return p.transposeReal(new Interval(-1, 2));
-        else if (p.chroma >= 7) return p.transposeReal(new Interval(-2, 4));
-        return p;
-    });
-}
-
 export async function playCantus() {
     await readyPlayback();
     if (audio.playing) {
@@ -108,31 +103,11 @@ export async function playCantus() {
 
         let cantus = state.repositionedCantus;
         if (audio.currentEDO == 53) {
-            cantus = mapCantus53();
+            cantus = respellCantusForAdaptiveJI(state.repositionedCantus);
         }
 
         scheduleFrequencies(cantus, noteObjects, time, 1);
     }
-}
-
-export function mapUpper53() {
-    return state.upperVoice.map((p, i) => {
-        const otherNote = state.lowerVoice[i].chroma;
-        if (
-            (p.chroma === 6 &&
-                (otherNote === 5 || otherNote === 3 || otherNote === 2)) ||
-            (p.chroma === 5 && otherNote === 6)
-        )
-            return p.transposeReal(new Interval(-2, 4));
-        if (
-            (p.chroma === 2 &&
-                (otherNote === 6 || otherNote === 3 || otherNote === -1)) ||
-            (p.chroma >= 3 && p.chroma < 7)
-        )
-            return p.transposeReal(new Interval(-1, 2));
-        else if (p.chroma >= 7) return p.transposeReal(new Interval(-2, 4));
-        return p;
-    });
 }
 
 export async function playCtpTop() {
@@ -148,31 +123,11 @@ export async function playCtpTop() {
 
         let upperVoice = state.upperVoice;
         if (audio.currentEDO == 53) {
-            upperVoice = mapUpper53();
+            upperVoice = respellUpperVoiceForAdaptiveJI(state.upperVoice, state.lowerVoice);
         }
 
         scheduleFrequencies(upperVoice, noteLists[0], time, 1, 0.66);
     }
-}
-
-export function mapLower53() {
-    return state.lowerVoice.map((p, i) => {
-        const otherNote = state.upperVoice[i].chroma;
-        if (
-            (p.chroma === 6 &&
-                (otherNote === 5 || otherNote === 3 || otherNote === 2)) ||
-            (p.chroma === 5 && otherNote === 6)
-        )
-            return p.transposeReal(new Interval(-2, 4));
-        if (
-            (p.chroma === 2 &&
-                (otherNote === 6 || otherNote === 3 || otherNote === -1)) ||
-            (p.chroma >= 3 && p.chroma < 7)
-        )
-            return p.transposeReal(new Interval(-1, 2));
-        else if (p.chroma >= 7) return p.transposeReal(new Interval(-2, 4));
-        return p;
-    });
 }
 
 export async function playCtpBottom() {
@@ -188,7 +143,7 @@ export async function playCtpBottom() {
 
         let lowerVoice = state.lowerVoice;
         if (audio.currentEDO == 53) {
-            lowerVoice = mapLower53();
+            lowerVoice = respellLowerVoiceForAdaptiveJI(state.upperVoice, state.lowerVoice);
         }
 
         scheduleFrequencies(lowerVoice, noteLists[1], time, 1, 0.66);
@@ -208,8 +163,8 @@ export async function playCtp() {
         let upperVoice = state.upperVoice;
         let lowerVoice = state.lowerVoice;
         if (audio.currentEDO == 53) {
-            upperVoice = mapUpper53();
-            lowerVoice = mapLower53();
+            upperVoice = respellUpperVoiceForAdaptiveJI(state.upperVoice, state.lowerVoice);
+            lowerVoice = respellLowerVoiceForAdaptiveJI(state.upperVoice, state.lowerVoice);
         }
 
         scheduleFrequencies(upperVoice, noteLists[0], time, 1, -0.66);
@@ -292,7 +247,6 @@ function scheduleFrequencies(
 function setTuningMap(edo: number) {
     audio.freq = TuningMap.fromEDO(edo);
     audio.currentEDO = edo;
-    drawCompound();
 }
 
 export function setTuning(edo: number) {

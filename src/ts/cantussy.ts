@@ -1,8 +1,42 @@
 import { Pitch, SPN, TonalContext } from "meantonal";
 import { state } from "./state.js";
 
+type EmscriptenType = "number" | "string" | "array" | "boolean" | null;
+
+// The narrow slice of the Emscripten module object this class actually uses.
+interface CantussyWasmModule {
+    cwrap(
+        ident: string,
+        returnType: EmscriptenType,
+        argTypes: EmscriptenType[],
+    ): (...args: number[]) => number;
+    _get_ctp(): number;
+    HEAP32?: Int32Array;
+    asm?: { HEAP32?: Int32Array };
+}
+
+// A C `Pitch` is `{ int w; int h; }`: 2 int32 fields per entry.
+const PITCH_STRUCT_FIELD_COUNT = 2;
+// `ptr` from WASM is a byte offset; >>2 converts it to an Int32Array index
+// (each int32 is 4 bytes).
+const INT32_INDEX_SHIFT = 2;
+
+function readPitchesFromHeap(
+    heap32: Int32Array,
+    ptr: number,
+    count: number,
+): Pitch[] {
+    const base = ptr >> INT32_INDEX_SHIFT;
+    const pitches: Pitch[] = [];
+    for (let i = 0; i < count; i++) {
+        const offset = base + i * PITCH_STRUCT_FIELD_COUNT;
+        pitches.push(new Pitch(heap32[offset], heap32[offset + 1]));
+    }
+    return pitches;
+}
+
 export class Cantussy {
-    private module: any;
+    private module: CantussyWasmModule;
     private generate_cantus: (mode: number, length: number) => void;
     private get_cantus_value: (index: number) => number;
     private generate_ctp: (x: number) => void;
@@ -10,7 +44,7 @@ export class Cantussy {
     private set_length: (x: number) => void;
     private set_mode: (x: number) => void;
     private set_cantus: (i: number, w: number, h: number) => void;
-    constructor(module: any) {
+    constructor(module: CantussyWasmModule) {
         this.module = module;
 
         this.generate_cantus = this.module.cwrap("generate_cantus", null, [
@@ -51,21 +85,9 @@ export class Cantussy {
         this.generate_ctp(state.customCantus ? 1 : 0);
 
         const ptr = this.module._get_ctp();
+        const heap32 = this.module.HEAP32 ?? this.module.asm?.HEAP32!;
 
-        const size = state.actualLength;
-        const pitches = [];
-
-        // int32 view into WASM memory
-        const mem = this.module.HEAP32 || this.module.asm.HEAP32;
-
-        for (let i = 0; i < size; i++) {
-            const base = (ptr >> 2) + i * 2;
-            const w = mem[base];
-            const h = mem[base + 1];
-            pitches.push(new Pitch(w, h));
-        }
-
-        return pitches;
+        return readPitchesFromHeap(heap32, ptr, state.actualLength);
     }
 
     get solutions() {

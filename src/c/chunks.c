@@ -41,10 +41,15 @@ Interval consonances[HARMONIC_INDEX_COUNT] = {(Interval){-7, -2}, // -M10
 
 chunk_node *data[MELODIC_INDEX_COUNT][HARMONIC_INDEX_COUNT] = {0};
 
-chunk_node node_pool[10000];
+chunk_node node_pool[NODE_POOL_SIZE];
 
 chunk_node *create_chunk(void) {
     static int i = 0;
+    if (i >= NODE_POOL_SIZE) {
+        fprintf(stderr, "node_pool exhausted (NODE_POOL_SIZE=%d)\n",
+                NODE_POOL_SIZE);
+        return &node_pool[NODE_POOL_SIZE - 1];
+    }
     i++;
     return node_pool + i - 1;
 }
@@ -130,32 +135,18 @@ void add_chunk(Interval i, Interval j, chunk c) {
     data[fi][si] = new_node; // insert at head
 }
 
-void print_chunks(Interval i, Interval j) {
-    int fi = map_melodic_index(i);
-    int si = map_harmonic_index(j);
-    chunk_node *current = data[fi][si];
-
-    char iname[8], jname[8];
-    interval_name(i, iname);
-    interval_name(j, jname);
-    printf("Chunks at (%s, %s):\n", iname, jname);
-    while (current) {
-        interval_name(current->data.cons, iname);
-        interval_name(current->data.motion, jname);
-        printf("  { cons: %s, motion: %s }\n", iname, jname);
-        current = current->next;
-    }
-}
-
 void shuffle_list(chunk_node **head) {
     if (!head || !*head)
         return;
 
-    // Step 1: copy node pointers into an array
-    chunk_node *arr[32]; // list length is <16
+    // Step 1: copy node pointers into an array. Bucket lists are expected to
+    // stay well under MAX_CHUNKS; if one ever grows past it, entries beyond
+    // MAX_CHUNKS are silently dropped from the shuffle rather than
+    // overflowing `arr`.
+    chunk_node *arr[MAX_CHUNKS];
     int n = 0;
     chunk_node *cur = *head;
-    while (cur && n < 32) {
+    while (cur && n < MAX_CHUNKS) {
         arr[n++] = cur;
         cur = cur->next;
     }
@@ -216,6 +207,8 @@ chunk_node *clone_list_into(const chunk_node *head,
     chunk_node *prev = NULL;
     int count = 0;
 
+    // As in shuffle_list, entries beyond MAX_CHUNKS are silently dropped
+    // rather than overflowing `buf`.
     while (src && count < MAX_CHUNKS) {
         buf[count].data = src->data; // copy chunk by value
         if (prev) {

@@ -7,12 +7,11 @@
 
 int BARS;
 int MODE;
-int cantus[32] = {0};
+int cantus[MAX_BARS] = {0};
 const int notes[] = {-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 bool cantus_success = false;
 bool initialised = false;
 
-EMSCRIPTEN_KEEPALIVE
 void initialise_env(void) {
     srand(time(NULL));
     initialised = true;
@@ -75,7 +74,7 @@ void try_note(CantusState state) {
 
         int this_motion = this_note - prev_note;
 
-        int to_fill[18];
+        int to_fill[CANTUS_FILL_LEN];
         bool must_fill = state.must_fill;
 
         if (registral_break(&state, &must_fill, to_fill, this_note, prev_note,

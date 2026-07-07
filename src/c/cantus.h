@@ -1,7 +1,6 @@
 #ifndef CANTUS_H
 #define CANTUS_H
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -10,7 +9,11 @@
 #define max(x, y) (((x) >= (y)) ? (x) : (y))
 #define min(x, y) (((x) <= (y)) ? (x) : (y))
 
-extern int cantus[32];
+// Longest cantus firmus / counterpoint the C engine and its WASM bindings
+// support; sizes every per-bar array in cantus.c/h and ctp.c/h.
+#define MAX_BARS 32
+
+extern int cantus[MAX_BARS];
 extern const int notes[17];
 
 extern int BARS;
@@ -54,23 +57,6 @@ static inline bool bad_climax(int climax) {
 static inline bool climax_good(CantusState *state) {
     return !state->repeated_climax && !bad_climax(state->top) &&
            !state->disconnected_climax;
-}
-
-static void print_cantus(void) {
-    // Pitch tonic, note_to_print;
-    // pitch_from_spn("D4", &tonic);
-    // TonalContext ctx = context_from_pitch(tonic, MODE);
-
-    // printf("!lp simple \\fixed c { ");
-    for (int i = 0; i < BARS; i++) {
-        // note_to_print = transpose_diatonic(tonic, cantus[i], ctx);
-        // char buf[8];
-        // pitch_lily(note_to_print, buf);
-        // printf("%s%s ", buf, i == 0 ? "4" : "");
-        printf("%d ", cantus[i]);
-    }
-    // printf("}\n");
-    printf("\n");
 }
 
 static inline int create_range(const CantusState *s, int *out) {
@@ -140,24 +126,32 @@ static inline bool same_sign(int x, int y) {
     return ((x > 0) ^ (y < 0)) || (x == 0 || y == 0);
 }
 
-static inline int get_lower_boundary(int to_fill[18]) {
-    for (int i = 0; i < 18; i++) {
+// Size of the cantus firmus's registral "fill" tracking array (to_fill) and
+// the offset added to a scale-degree note value to index into it. ctp.h's
+// counterpoint-side equivalents (CTP_FILL_LEN/CTP_FILL_OFFSET) size the same
+// concept 2 wider, since counterpoint intervals span a wider range than
+// cantus firmus scale degrees.
+#define CANTUS_FILL_LEN 18
+#define CANTUS_FILL_OFFSET 7
+
+static inline int get_lower_boundary(int to_fill[CANTUS_FILL_LEN]) {
+    for (int i = 0; i < CANTUS_FILL_LEN; i++) {
         if (to_fill[i] != -1)
-            return i - 7;
+            return i - CANTUS_FILL_OFFSET;
     }
     return 0;
 }
 
-static inline int get_upper_boundary(int to_fill[18]) {
-    for (int i = 17; i >= 0; i--) {
+static inline int get_upper_boundary(int to_fill[CANTUS_FILL_LEN]) {
+    for (int i = CANTUS_FILL_LEN - 1; i >= 0; i--) {
         if (to_fill[i] != -1)
-            return i - 7;
+            return i - CANTUS_FILL_OFFSET;
     }
     return 0;
 }
 
 static inline bool registral_break(CantusState *state, bool *must_fill,
-                                   int to_fill[18], int this_note,
+                                   int to_fill[CANTUS_FILL_LEN], int this_note,
                                    int prev_note, int this_motion) {
     if (*must_fill) {
         int lower = get_lower_boundary(state->to_fill);
@@ -165,23 +159,23 @@ static inline bool registral_break(CantusState *state, bool *must_fill,
         if ((this_note == lower || this_note == upper) &&
             (prev_note == lower || prev_note == upper))
             return true;
-        for (int i = 0; i < 18; i++) {
+        for (int i = 0; i < CANTUS_FILL_LEN; i++) {
             to_fill[i] = state->to_fill[i];
         }
-        if (state->to_fill[this_note + 7] == -1) {
-            for (int i = 1; i < 17; i++) {
+        if (state->to_fill[this_note + CANTUS_FILL_OFFSET] == -1) {
+            for (int i = 1; i < CANTUS_FILL_LEN - 1; i++) {
                 if (state->to_fill[i] == 0)
                     return true;
             }
             *must_fill = false;
         } else
-            to_fill[this_note + 7]++;
+            to_fill[this_note + CANTUS_FILL_OFFSET]++;
     } else if (abs(this_motion) > 3) {
-        for (int i = 0; i < 18; i++)
+        for (int i = 0; i < CANTUS_FILL_LEN; i++)
             to_fill[i] = -1; // sentinel value
 
-        int low_bound = min(this_note, prev_note) + 7;
-        int high_bound = max(this_note, prev_note) + 7;
+        int low_bound = min(this_note, prev_note) + CANTUS_FILL_OFFSET;
+        int high_bound = max(this_note, prev_note) + CANTUS_FILL_OFFSET;
         for (int i = low_bound; i <= high_bound; i++)
             to_fill[i] = 0;
         to_fill[low_bound] = to_fill[high_bound] = 1;

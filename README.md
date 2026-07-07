@@ -39,3 +39,15 @@ The error checks are also parameterised in a way that should make them easy to s
 
 - [x] Leaps should be equally likely to occur at any point in a generated cantus.
 - [x] Any acceptable range should be equally likely to be spanned. Shouldn't be biased towards narrow or wide canti.
+
+## Building
+
+The generation engine lives in `src/c/*` and is compiled to WebAssembly via [Emscripten](https://emscripten.org/); the output (`src/cantus.js`, `src/cantus.wasm`) is committed to this repo so the frontend build (`npm run build`, `npm run dev`) doesn't itself require the Emscripten SDK.
+
+Whenever `src/c/*.c`/`*.h` changes, rebuild and commit the regenerated output:
+
+```
+npm run build:wasm
+```
+
+This requires the Emscripten SDK (`emcc`) to be installed and activated on your `PATH`.
