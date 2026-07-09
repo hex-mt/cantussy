@@ -44,6 +44,9 @@ export class Cantussy {
     private set_length: (x: number) => void;
     private set_mode: (x: number) => void;
     private set_cantus: (i: number, w: number, h: number) => void;
+    private set_rule_param: (ruleId: number, value: number) => void;
+    private get_rule_param: (ruleId: number) => number;
+    private reset_rule_params: () => void;
     constructor(module: CantussyWasmModule) {
         this.module = module;
 
@@ -64,6 +67,10 @@ export class Cantussy {
         this.set_mode = this.module.cwrap("set_mode", null, ["number"]);
 
         this.set_cantus = this.module.cwrap("set_cantus", null, ["number", "number", "number"]);
+
+        this.set_rule_param = this.module.cwrap("set_rule_param", null, ["number", "number"]);
+        this.get_rule_param = this.module.cwrap("get_rule_param", "number", ["number"]);
+        this.reset_rule_params = this.module.cwrap("reset_rule_params", null, []);
     }
     generateCantus() {
         this.generate_cantus(state.actualMode, state.actualLength);
@@ -100,5 +107,17 @@ export class Cantussy {
         for (let i = 0; i < state.actualLength; i++) {
             this.set_cantus(i, state.cantus[i].w, state.cantus[i].h);
         }
+    }
+
+    setRuleParam(ruleId: number, value: number) {
+        this.set_rule_param(ruleId, value);
+    }
+
+    getRuleParam(ruleId: number) {
+        return this.get_rule_param(ruleId);
+    }
+
+    resetRuleParams() {
+        this.reset_rule_params();
     }
 }

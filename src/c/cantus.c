@@ -12,6 +12,33 @@ const int notes[] = {-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 bool cantus_success = false;
 bool initialised = false;
 
+const RuleParams RULE_DEFAULTS = {
+    .registral_break = true,
+    .large_unrecovered_leap = true,
+    .climax_disconnected = true,
+    .repeated_note = true,
+    .dissonant_leap = true,
+    .max_leap_size = 7,
+    .tritone_melodic = true,
+    .leaps_divisor = 4,
+    .max_large_leaps = 2,
+    .steps_past_arpeggio = true,
+    .arpeggio_past_step = true,
+    .large_leap_past_step = true,
+    .max_leaps_in_row = 2,
+    .bad_consecutive_leaps = true,
+    .max_range = 10,
+    .bad_climax = true,
+    .max_same_direction = 3,
+    .dissonant_outline = true,
+    .tritone_in_gesture = true,
+    .noodling = true,
+    .max_tone_repetition = 2,
+    .bad_cadence_approach = true,
+    .step_bias_correction = true,
+};
+RuleParams rules = RULE_DEFAULTS;
+
 void initialise_env(void) {
     srand(time(NULL));
     initialised = true;
@@ -22,6 +49,68 @@ void set_bars(int length) { BARS = length; }
 
 EMSCRIPTEN_KEEPALIVE
 void set_mode(int mode) { MODE = mode; }
+
+EMSCRIPTEN_KEEPALIVE
+void set_rule_param(int rule_id, int value) {
+    switch (rule_id) {
+    case RULE_REGISTRAL_BREAK: rules.registral_break = value; break;
+    case RULE_LARGE_UNRECOVERED_LEAP: rules.large_unrecovered_leap = value; break;
+    case RULE_CLIMAX_DISCONNECTED: rules.climax_disconnected = value; break;
+    case RULE_REPEATED_NOTE: rules.repeated_note = value; break;
+    case RULE_DISSONANT_LEAP: rules.dissonant_leap = value; break;
+    case RULE_MAX_LEAP_SIZE: rules.max_leap_size = value; break;
+    case RULE_TRITONE_MELODIC: rules.tritone_melodic = value; break;
+    case RULE_LEAPS_DIVISOR: rules.leaps_divisor = value; break;
+    case RULE_MAX_LARGE_LEAPS: rules.max_large_leaps = value; break;
+    case RULE_STEPS_PAST_ARPEGGIO: rules.steps_past_arpeggio = value; break;
+    case RULE_ARPEGGIO_PAST_STEP: rules.arpeggio_past_step = value; break;
+    case RULE_LARGE_LEAP_PAST_STEP: rules.large_leap_past_step = value; break;
+    case RULE_MAX_LEAPS_IN_ROW: rules.max_leaps_in_row = value; break;
+    case RULE_BAD_CONSECUTIVE_LEAPS: rules.bad_consecutive_leaps = value; break;
+    case RULE_MAX_RANGE: rules.max_range = value; break;
+    case RULE_BAD_CLIMAX: rules.bad_climax = value; break;
+    case RULE_MAX_SAME_DIRECTION: rules.max_same_direction = value; break;
+    case RULE_DISSONANT_OUTLINE: rules.dissonant_outline = value; break;
+    case RULE_TRITONE_IN_GESTURE: rules.tritone_in_gesture = value; break;
+    case RULE_NOODLING: rules.noodling = value; break;
+    case RULE_MAX_TONE_REPETITION: rules.max_tone_repetition = value; break;
+    case RULE_BAD_CADENCE_APPROACH: rules.bad_cadence_approach = value; break;
+    case RULE_STEP_BIAS_CORRECTION: rules.step_bias_correction = value; break;
+    }
+}
+
+EMSCRIPTEN_KEEPALIVE
+int get_rule_param(int rule_id) {
+    switch (rule_id) {
+    case RULE_REGISTRAL_BREAK: return rules.registral_break;
+    case RULE_LARGE_UNRECOVERED_LEAP: return rules.large_unrecovered_leap;
+    case RULE_CLIMAX_DISCONNECTED: return rules.climax_disconnected;
+    case RULE_REPEATED_NOTE: return rules.repeated_note;
+    case RULE_DISSONANT_LEAP: return rules.dissonant_leap;
+    case RULE_MAX_LEAP_SIZE: return rules.max_leap_size;
+    case RULE_TRITONE_MELODIC: return rules.tritone_melodic;
+    case RULE_LEAPS_DIVISOR: return rules.leaps_divisor;
+    case RULE_MAX_LARGE_LEAPS: return rules.max_large_leaps;
+    case RULE_STEPS_PAST_ARPEGGIO: return rules.steps_past_arpeggio;
+    case RULE_ARPEGGIO_PAST_STEP: return rules.arpeggio_past_step;
+    case RULE_LARGE_LEAP_PAST_STEP: return rules.large_leap_past_step;
+    case RULE_MAX_LEAPS_IN_ROW: return rules.max_leaps_in_row;
+    case RULE_BAD_CONSECUTIVE_LEAPS: return rules.bad_consecutive_leaps;
+    case RULE_MAX_RANGE: return rules.max_range;
+    case RULE_BAD_CLIMAX: return rules.bad_climax;
+    case RULE_MAX_SAME_DIRECTION: return rules.max_same_direction;
+    case RULE_DISSONANT_OUTLINE: return rules.dissonant_outline;
+    case RULE_TRITONE_IN_GESTURE: return rules.tritone_in_gesture;
+    case RULE_NOODLING: return rules.noodling;
+    case RULE_MAX_TONE_REPETITION: return rules.max_tone_repetition;
+    case RULE_BAD_CADENCE_APPROACH: return rules.bad_cadence_approach;
+    case RULE_STEP_BIAS_CORRECTION: return rules.step_bias_correction;
+    }
+    return 0;
+}
+
+EMSCRIPTEN_KEEPALIVE
+void reset_rule_params(void) { rules = RULE_DEFAULTS; }
 
 EMSCRIPTEN_KEEPALIVE
 int generate_cantus(int mode, int length) {
@@ -97,10 +186,10 @@ void try_note(CantusState state) {
         if (dissonant_leap(this_motion))
             continue;
 
-        if (larger_than_octave(this_motion))
+        if (leap_too_large(this_motion))
             continue;
 
-        if (tritone_between(prev_note, this_note))
+        if (tritone_melodic(prev_note, this_note))
             continue;
 
         int leaps_total = update_leaps_total(&state, this_motion);

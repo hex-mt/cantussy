@@ -6,3 +6,5 @@ export const cantusInput = document.getElementById(
 )! as HTMLInputElement;
 export const hand = document.getElementById("hand");
 export const fist = document.getElementById("fist");
+export const scrollOpen = document.getElementById("scroll-open");
+export const scrollRolled = document.getElementById("scroll-rolled");

@@ -178,6 +178,8 @@
                             xmlns="http://www.w3.org/2000/svg"
                             xml:space="preserve"
                             viewBox="0 0 73.35 58.38"
+                            id="scroll-open"
+                            class="hidden"
                         >
                             <g>
                                 <path
@@ -188,6 +190,15 @@
                                 />
                             </g>
                         </svg>
+                        <div class="w-16" id="scroll-rolled">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                xml:space="preserve"
+                                viewBox="0 0 61.71 17.72"
+                            >
+                                <path d="M5.44 0s-.01 0 0 0m.04 1C4 1.12 2.6 2.14 1.58 3.8a11.4 11.4 0 0 0-1.56 6.37c.09 2.2.77 4.2 1.77 5.57s2.26 2.1 3.59 1.96h32.95a7 7 0 0 1-1.3-1.38q-.6-.85-1.02-1.9a.5.5 0 0 1-.12-.3 12 12 0 0 1-.82-3.9c-.1-2.65.55-5.1 1.7-6.94A8 8 0 0 1 38.84 1zm36.46 3.55q-.2 0-.37.03c-.8.13-1.61.76-2.18 1.77a6 6 0 0 0-.74 2.31h3.28c.34 0 .7-.02 1.06.22.35.25.5.66.6 1.21.2 1 .07 1.97-.28 2.77-.36.79-.93 1.43-1.67 1.66q-.5.15-1 .08h-3.47q.3.62.68 1.14c.83 1.13 1.83 1.83 2.9 1.96h.72c1.15-.14 2.25-.98 3.06-2.31a9 9 0 0 0 1.18-5.17 8 8 0 0 0-1.43-4.26c-.68-.9-1.48-1.4-2.34-1.41m-4.75.04a11.8 11.8 0 0 0-.45 9.01h2.2l-.05-.07c-.7-.83-1.14-2-1.26-3.29a8 8 0 0 1-.03-1.07v-.05c.06-1.22.4-2.34.92-3.26q.4-.75.98-1.27zm1.4 5.07.04.49c.1 1.1.5 2.11 1.03 2.74q.48.6 1 .71l.15.03q.26.03.53-.06c.36-.12.78-.52 1.05-1.12s.39-1.38.23-2.16c-.1-.44-.2-.57-.2-.59h-.01a2 2 0 0 0-.48-.04z"/>
+                            </svg>
+                        </div>
                     </button>
                     <button
                         class="w-10 fill-stone-700 dark:fill-orange-100 hover:fill-stone-600 dark:hover:fill-orange-200 hover:scale-110 active:fill-stone-500 dark:active:fill-orange-50 active:scale-90 transition"
@@ -264,6 +275,18 @@
                             </g>
                         </svg>
                     </button>
+                </div>
+                <div
+                    id="rules-panel"
+                    class="hidden w-full max-w-xl flex flex-col items-center"
+                >
+                    <button
+                        id="reset-rules"
+                        class="mb-2 px-4 py-2 rounded-full bg-stone-800/10 dark:bg-stone-800 text-stone-700 dark:text-orange-100 text-sm hover:bg-stone-700/10 dark:hover:bg-stone-700 transition-colors"
+                    >
+                        Reset to defaults
+                    </button>
+                    <div id="rules-controls" class="w-full"></div>
                 </div>
             </section>
 
@@ -655,6 +678,7 @@
             </section>
 
             <div
+                id="main-nav"
                 class="mt-100 flex bg-stone-800/10 dark:bg-stone-800 rounded-full text-stone-700 dark:text-orange-100"
             >
                 <button

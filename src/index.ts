@@ -16,7 +16,16 @@ import { Cantussy } from "./ts/cantussy.js";
 import { drawCompound } from "./ts/scoreCompound.js";
 import { regenerateCantus, regenerateCtp } from "./ts/renderPipeline.js";
 import { cantusFromString } from "./ts/cantusEntry.js";
-import { modeLabel, lenLabel, cantusInput, hand, fist } from "./ts/domRefs.js";
+import {
+    modeLabel,
+    lenLabel,
+    cantusInput,
+    hand,
+    fist,
+    scrollOpen,
+    scrollRolled,
+} from "./ts/domRefs.js";
+import { loadRuleValues, applyRuleValuesToWasm, renderRulesPanel } from "./ts/rules.js";
 
 // Mode / length controls
 
@@ -97,6 +106,34 @@ function confirmEdit() {
     toggleEdit();
 }
 
+let rulesOpen = false;
+
+// #rules-panel sits below the button row, out of the way of #cantus and the
+// controls — nothing above it ever moves. Since section-1 is
+// position:absolute, growing #rules-panel doesn't push anything in normal
+// document flow either, so the bottom nav (#main-nav, a normal-flow
+// sibling of the sections) is pushed down explicitly here, matching
+// #rules-panel's rendered height, rather than by relying on layout flow.
+function updateNavOffset() {
+    const nav = document.getElementById("main-nav");
+    const rulesPanel = document.getElementById("rules-panel");
+    if (!nav) return;
+    if (rulesOpen && rulesPanel) {
+        const extra = rulesPanel.getBoundingClientRect().height;
+        nav.style.marginTop = `calc(25rem + ${extra}px + 2rem)`;
+    } else {
+        nav.style.marginTop = "";
+    }
+}
+
+function toggleRulesPanel() {
+    rulesOpen = !rulesOpen;
+    document.getElementById("rules-panel")?.classList.toggle("hidden");
+    scrollOpen?.classList.toggle("hidden");
+    scrollRolled?.classList.toggle("hidden");
+    updateNavOffset();
+}
+
 // Section switching
 
 function showSection(next: number) {
@@ -172,6 +209,9 @@ document.getElementById("solfa")!.addEventListener("click", toggleSolfa);
 document.getElementById("edit")!.addEventListener("click", toggleEdit);
 document.getElementById("cancel-edit")!.addEventListener("click", toggleEdit);
 document.getElementById("confirm-edit")!.addEventListener("click", confirmEdit);
+document
+    .getElementById("toggle-rules")!
+    .addEventListener("click", toggleRulesPanel);
 cantusInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter")
         confirmEdit();
@@ -261,6 +301,9 @@ for (let i = 1; i <= 4; i++) {
 
 const CantussyModule = await createCantussyModule();
 state.cantussy = new Cantussy(CantussyModule);
+loadRuleValues();
+applyRuleValuesToWasm(state.cantussy);
+renderRulesPanel(document.getElementById("rules-panel")!, state.cantussy);
 const VerovioModule = await createVerovioModule();
 state.verovio = new VerovioToolkit(VerovioModule);
 
