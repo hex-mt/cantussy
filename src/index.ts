@@ -248,6 +248,18 @@ attachTooltip(
 attachTooltip(document.getElementById("play-cantus")!, "Perform cantus");
 attachTooltip(document.getElementById("solfa")!, "Toggle solfeggio");
 attachTooltip(document.getElementById("edit")!, "Edit cantus");
+attachTooltip(document.getElementById("randomise-both")!, "Regenerate both");
+attachTooltip(
+    document.getElementById("randomise-ctp")!,
+    "Regenerate counterpoint",
+);
+attachTooltip(document.getElementById("play-ctp-top")!, "Perform upper voice");
+attachTooltip(
+    document.getElementById("play-ctp-bottom")!,
+    "Perform lower voice",
+);
+attachTooltip(document.getElementById("play-ctp")!, "Perform both");
+attachTooltip(document.getElementById("play-compound")!, "Perform melody");
 cantusInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter")
         confirmEdit();
