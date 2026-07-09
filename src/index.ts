@@ -13,9 +13,12 @@ import createCantussyModule from "./cantus.js";
 import createVerovioModule from "verovio/wasm";
 import { VerovioToolkit } from "verovio/esm";
 import { Cantussy } from "./ts/cantussy.js";
+import { drawCantus } from "./ts/scoreCantus.js";
+import { renderCtp } from "./ts/scoreCtp.js";
 import { drawCompound } from "./ts/scoreCompound.js";
 import { regenerateCantus, regenerateCtp } from "./ts/renderPipeline.js";
 import { cantusFromString } from "./ts/cantusEntry.js";
+import { buildShareUrl, parseShareState } from "./ts/urlState.js";
 import {
     modeLabel,
     lenLabel,
@@ -26,7 +29,7 @@ import {
     scrollRolled,
 } from "./ts/domRefs.js";
 import { loadRuleValues, applyRuleValuesToWasm, renderRulesPanel } from "./ts/rules.js";
-import { attachTooltip } from "./ts/tooltip.js";
+import { attachTooltip, TooltipHandle } from "./ts/tooltip.js";
 
 // Mode / length controls
 
@@ -193,6 +196,18 @@ function switchSection(next: number) {
     state.currentSection = next;
 }
 
+// Shared by all 3 "link" buttons — each only exists on its own panel, so
+// state.currentSection is already correct at click time. Confirms the copy
+// via the button's own tooltip (already visible, since the button had to be
+// hovered to click it) rather than the button's content, so the icon never
+// disappears.
+function handleCopyLink(tooltip: TooltipHandle) {
+    const url = buildShareUrl(state.cantus, state.ctp, state.currentSection);
+    navigator.clipboard.writeText(url).then(() => {
+        tooltip.flash("Link copied to clipboard.");
+    });
+}
+
 // Theme
 
 function updateTheme() {
@@ -237,6 +252,9 @@ document.getElementById("confirm-edit")!.addEventListener("click", confirmEdit);
 document
     .getElementById("toggle-rules")!
     .addEventListener("click", toggleRulesPanel);
+const linkCantusButton = document.getElementById("link-cantus")!;
+const linkCantusTooltip = attachTooltip(linkCantusButton, "Copy shareable link");
+linkCantusButton.addEventListener("click", () => handleCopyLink(linkCantusTooltip));
 attachTooltip(
     document.getElementById("toggle-rules")!,
     "Tweak cantus generation rules",
@@ -282,11 +300,22 @@ document
     .getElementById("play-ctp-bottom")!
     .addEventListener("click", playCtpBottom);
 document.getElementById("play-ctp")!.addEventListener("click", playCtp);
+const linkCtpButton = document.getElementById("link-ctp")!;
+const linkCtpTooltip = attachTooltip(linkCtpButton, "Copy shareable link");
+linkCtpButton.addEventListener("click", () => handleCopyLink(linkCtpTooltip));
 
 // Compound controls
 
 const playCompoundButton = document.getElementById("play-compound")!;
 playCompoundButton.addEventListener("click", playCompound);
+const linkCompoundButton = document.getElementById("link-compound")!;
+const linkCompoundTooltip = attachTooltip(
+    linkCompoundButton,
+    "Copy shareable link",
+);
+linkCompoundButton.addEventListener("click", () =>
+    handleCopyLink(linkCompoundTooltip),
+);
 
 // Setting controls
 
@@ -345,6 +374,32 @@ for (let i = 1; i <= 4; i++) {
         });
 }
 
+// Applies a shared cantus/counterpoint/panel from the URL's query string on
+// top of the already-fully-initialised app state, mirroring confirmEdit()'s
+// manual-entry flow for the cantus half. No-ops silently if there's nothing
+// to restore or the params are malformed. Always scrubs the query string
+// afterwards so the address bar returns to a plain URL either way.
+async function applySharedStateFromUrl() {
+    const shared = parseShareState(window.location.search);
+
+    if (shared) {
+        state.customCantus = true;
+        state.cantus = shared.cantus;
+        state.actualMode = state.cantus[0].chroma + 1;
+        state.actualLength = state.cantus.length;
+        state.cantussy.updateCantus();
+        await drawCantus();
+
+        state.ctp = shared.ctp;
+        await renderCtp();
+        await drawCompound();
+
+        showSection(shared.panel);
+    }
+
+    history.replaceState(null, "", location.pathname);
+}
+
 // State initialisation
 
 const CantussyModule = await createCantussyModule();
@@ -357,8 +412,10 @@ state.verovio = new VerovioToolkit(VerovioModule);
 
 showSection(1);
 setWaveform("triangle");
-regenerateCantus();
+await regenerateCantus();
 setTuning(31);
+
+await applySharedStateFromUrl();
 
 if (localStorage.theme === "light") {
     document

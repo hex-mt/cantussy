@@ -11,10 +11,17 @@ const LOW_REGISTER_BOUNDARY = new Pitch(24, 9);
 const HIGH_REGISTER_BOUNDARY = new Pitch(35, 14);
 
 export async function drawCtp() {
-    audio.stop();
-
     state.ctp = state.cantussy.generateCtp();
     solutionsLabel.innerHTML = `${state.cantussy.solutions}`;
+    await renderCtp();
+}
+
+// Pure render of state.cantus/state.ctp — no WASM generation. Split out so
+// a URL-restored counterpoint can be rendered without invoking
+// generateCtp() (which would overwrite it with a fresh, non-deterministic
+// solution).
+export async function renderCtp() {
+    audio.stop();
 
     if (state.ctp[0].isEqual(new Pitch(0, 0))) {
         document.getElementById("ctp")!.innerHTML =
