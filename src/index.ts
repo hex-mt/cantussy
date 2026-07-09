@@ -134,11 +134,35 @@ function toggleRulesPanel() {
     updateNavOffset();
 }
 
+function closeRulesPanel() {
+    if (!rulesOpen) return;
+    rulesOpen = false;
+    document.getElementById("rules-panel")?.classList.add("hidden");
+    scrollOpen?.classList.add("hidden");
+    scrollRolled?.classList.remove("hidden");
+    updateNavOffset();
+}
+
 // Section switching
+
+// Matches #main-nav's margin-top transition duration in style.css, so that
+// when the rules panel is open, it has time to fold away before the tab
+// underneath it switches.
+const RULES_FOLD_DELAY_MS = 400;
 
 function showSection(next: number) {
     if (next === state.currentSection) return;
 
+    if (rulesOpen) {
+        closeRulesPanel();
+        window.setTimeout(() => switchSection(next), RULES_FOLD_DELAY_MS);
+        return;
+    }
+
+    switchSection(next);
+}
+
+function switchSection(next: number) {
     const currEl = document.getElementById(`section-${state.currentSection}`)!;
     const nextEl = document.getElementById(`section-${next}`)!;
     const forward = next > state.currentSection;
