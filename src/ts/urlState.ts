@@ -25,21 +25,35 @@ const SECTION_BY_PANEL_PARAM: Record<string, number> = {
     unfold: 3,
 };
 
+const VALID_EDOS = [12, 19, 31, 50, 53, 55];
+const VALID_WAVEFORMS: OscillatorType[] = ["triangle", "sawtooth", "square"];
+const MIN_BPM = 40;
+const MAX_BPM = 208;
+
 export interface SharedState {
     cantus: Pitch[];
     ctp: Pitch[];
     panel: number;
+    edo: number;
+    bpm: string;
+    waveform: OscillatorType;
 }
 
 export function buildShareUrl(
     cantus: Pitch[],
     ctp: Pitch[],
     panel: number,
+    edo: number,
+    bpm: string,
+    waveform: OscillatorType,
 ): string {
     const params = new URLSearchParams();
     params.set("cantus", pitchesToToken(cantus));
     params.set("ctp", pitchesToToken(ctp));
     params.set("panel", PANEL_PARAM_BY_SECTION[panel] ?? "cantus");
+    params.set("edo", String(edo));
+    params.set("bpm", bpm);
+    params.set("waveform", waveform);
     return `${location.origin}${location.pathname}?${params.toString()}`;
 }
 
@@ -67,5 +81,21 @@ export function parseShareState(search: string): SharedState | null {
             ? SECTION_BY_PANEL_PARAM[panelParam]
             : 1;
 
-    return { cantus, ctp, panel };
+    const edoParam = Number(params.get("edo"));
+    const edo = VALID_EDOS.includes(edoParam) ? edoParam : 31;
+
+    const bpmParam = Number(params.get("bpm"));
+    const bpm = String(
+        Number.isFinite(bpmParam)
+            ? Math.min(MAX_BPM, Math.max(MIN_BPM, bpmParam))
+            : 80,
+    );
+
+    const waveformParam = params.get("waveform") as OscillatorType | null;
+    const waveform =
+        waveformParam && VALID_WAVEFORMS.includes(waveformParam)
+            ? waveformParam
+            : "triangle";
+
+    return { cantus, ctp, panel, edo, bpm, waveform };
 }

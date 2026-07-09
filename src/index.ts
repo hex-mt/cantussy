@@ -202,7 +202,14 @@ function switchSection(next: number) {
 // hovered to click it) rather than the button's content, so the icon never
 // disappears.
 function handleCopyLink(tooltip: TooltipHandle) {
-    const url = buildShareUrl(state.cantus, state.ctp, state.currentSection);
+    const url = buildShareUrl(
+        state.cantus,
+        state.ctp,
+        state.currentSection,
+        audio.currentEDO,
+        audio.bpm,
+        audio.waveform,
+    );
     navigator.clipboard.writeText(url).then(() => {
         tooltip.flash("Link copied to clipboard.");
     });
@@ -374,11 +381,12 @@ for (let i = 1; i <= 4; i++) {
         });
 }
 
-// Applies a shared cantus/counterpoint/panel from the URL's query string on
-// top of the already-fully-initialised app state, mirroring confirmEdit()'s
-// manual-entry flow for the cantus half. No-ops silently if there's nothing
-// to restore or the params are malformed. Always scrubs the query string
-// afterwards so the address bar returns to a plain URL either way.
+// Applies a shared cantus/counterpoint/panel/tuning/tempo/waveform from the
+// URL's query string on top of the already-fully-initialised app state,
+// mirroring confirmEdit()'s manual-entry flow for the cantus half. No-ops
+// silently if there's nothing to restore or the params are malformed.
+// Always scrubs the query string afterwards so the address bar returns to a
+// plain URL either way.
 async function applySharedStateFromUrl() {
     const shared = parseShareState(window.location.search);
 
@@ -391,8 +399,15 @@ async function applySharedStateFromUrl() {
         await drawCantus();
 
         state.ctp = shared.ctp;
+        setTuning(shared.edo);
         await renderCtp();
         await drawCompound();
+
+        audio.bpm = bpmValue.textContent = shared.bpm;
+        (document.getElementById("bpm-slider") as HTMLInputElement).value =
+            shared.bpm;
+
+        setWaveform(shared.waveform);
 
         showSection(shared.panel);
     }
