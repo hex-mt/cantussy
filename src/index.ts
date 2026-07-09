@@ -26,6 +26,7 @@ import {
     scrollRolled,
 } from "./ts/domRefs.js";
 import { loadRuleValues, applyRuleValuesToWasm, renderRulesPanel } from "./ts/rules.js";
+import { attachTooltip } from "./ts/tooltip.js";
 
 // Mode / length controls
 
@@ -236,6 +237,17 @@ document.getElementById("confirm-edit")!.addEventListener("click", confirmEdit);
 document
     .getElementById("toggle-rules")!
     .addEventListener("click", toggleRulesPanel);
+attachTooltip(
+    document.getElementById("toggle-rules")!,
+    "Tweak cantus generation rules",
+);
+attachTooltip(
+    document.getElementById("randomise-cantus")!,
+    "Regenerate cantus",
+);
+attachTooltip(document.getElementById("play-cantus")!, "Perform cantus");
+attachTooltip(document.getElementById("solfa")!, "Toggle solfeggio");
+attachTooltip(document.getElementById("edit")!, "Edit cantus");
 cantusInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter")
         confirmEdit();
