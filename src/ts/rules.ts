@@ -230,6 +230,7 @@ export function renderRulesPanel(container: HTMLElement, cantussy: Cantussy) {
             if (rule.type === "toggle") {
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
+                checkbox.className = "rule-checkbox";
                 checkbox.id = `rule-${rule.key}`;
                 checkbox.checked = ruleValues[rule.key] === 1;
                 checkbox.addEventListener("change", () => {
